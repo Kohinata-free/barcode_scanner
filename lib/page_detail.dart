@@ -1,27 +1,23 @@
+import 'package:barcode_scanner/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:barcode_scanner/appbar_component_widget.dart';
 
 class PageDetail extends ConsumerWidget {
+  // AppBar
+  final appBar = AppBarComponentWidget(
+    title: '食品バーコードリーダー',
+  );
   @override
   Widget build(BuildContext context, ref) {
+    // バーコード
+    final barcode = ref.watch(Provider_Barcode);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('詳細画面です'),
-      ),
+      appBar: appBar,
       body: Column(
         children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[200],
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text(
-              '戻る',
-              style: TextStyle(fontSize: 20),
-            ),
-          ),
+          Text('バーコード：${barcode}'),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.amber[200],
