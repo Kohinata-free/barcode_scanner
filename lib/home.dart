@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // バーコードの状態を共有する
 final Provider_Barcode = StateProvider<String>((ref) {
-  return '';
+  return "----------";
 });
 
 class Home extends ConsumerWidget {

@@ -1,23 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'appbar_component_widget.dart';
+
 class PageList extends ConsumerWidget {
   const PageList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // AppBar
-    final appBar = AppBar(
-      backgroundColor: Colors.pink[200],
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 8.0, top: 4.0, bottom: 4.0),
-        child: Image.asset(
-          'assets/images/TK-free_Circle.png',
-          height: 40,
-          width: 40,
-        ),
-      ),
-      title: Text('食品バーコードリーダー'),
+    final appBar = AppBarComponentWidget(
+      title: '食品バーコードリーダー',
     );
 
     return Scaffold(
@@ -36,7 +29,6 @@ class PageList extends ConsumerWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 26,
-                fontWeight: FontWeight.bold,
               ),
             ),
           ),
