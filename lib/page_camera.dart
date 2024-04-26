@@ -20,7 +20,7 @@ class PageCamera extends ConsumerWidget {
     // スキャナーの作用を制御するコントローラーのオブジェクト
     MobileScannerController controller = MobileScannerController();
     // バーコード
-    final barcode = ref.watch(Provider_Barcode);
+    // final barcode = ref.watch(Provider_Barcode);
     return Scaffold(
       backgroundColor: Colors.blueGrey[100],
       appBar: appBar,
@@ -40,16 +40,14 @@ class PageCamera extends ConsumerWidget {
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.width * 1.2,
-              // width: MediaQuery.of(context).size.width * 1.2,
+              height: MediaQuery.of(context).size.width * 6 / 5,
               child: MobileScanner(
                 controller: controller,
                 fit: BoxFit.contain,
                 // QRコードかバーコードが見つかった後すぐ実行する関数
                 onDetect: (scandata) {
                   controller.stop(); // まずはカメラを止める
-                  ref.read(Provider_Barcode.notifier).state =
-                      scandata.barcodes[0].toString();
+                  ref.read(Provider_Barcode_Info.notifier).state = scandata;
                   // 結果を表す画面に切り替える
                   Navigator.pushNamed(context, '/page_detail');
                 },
@@ -68,6 +66,7 @@ class PageCamera extends ConsumerWidget {
                         backgroundColor: Colors.green[200],
                       ),
                       onPressed: () {
+                        controller.stop(); // まずはカメラを止める
                         Navigator.pop(context);
                       },
                       child: Text(
