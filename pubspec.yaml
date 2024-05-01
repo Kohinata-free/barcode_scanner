@@ -12,6 +12,8 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter_riverpod: ^2.5.1
   mobile_scanner: ^3.5.6
+  convert: ^3.1.1
+  http: ^1.2.1
   # mobile_scanner: ^5.0.1
 
 dev_dependencies:

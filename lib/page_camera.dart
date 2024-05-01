@@ -43,7 +43,8 @@ class PageCamera extends ConsumerWidget {
               height: MediaQuery.of(context).size.width * 6 / 5,
               child: MobileScanner(
                 controller: controller,
-                fit: BoxFit.contain,
+                fit: BoxFit.cover,
+                // fit: BoxFit.contain,
                 // QRコードかバーコードが見つかった後すぐ実行する関数
                 onDetect: (scandata) {
                   controller.stop(); // まずはカメラを止める
@@ -71,7 +72,7 @@ class PageCamera extends ConsumerWidget {
                       },
                       child: Text(
                         '戻る',
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(color: Colors.black, fontSize: 26),
                       ),
                     ),
                   ),
@@ -87,7 +88,7 @@ class PageCamera extends ConsumerWidget {
                       },
                       child: Text(
                         '詳細',
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(color: Colors.black, fontSize: 26),
                       ),
                     ),
                   ),
