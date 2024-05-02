@@ -8,6 +8,11 @@ final Provider_Barcode_Info = StateProvider<BarcodeCapture?>((ref) {
   return null;
 });
 
+// 最後に取得した商品情報を共有する
+final Provider_Product_Info = StateProvider<Map<String, dynamic>?>((ref) {
+  return null;
+});
+
 class Home extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
