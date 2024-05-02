@@ -1,3 +1,4 @@
+import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,35 +40,21 @@ class PageDetail extends ConsumerWidget {
     final productInfo = ref.watch(Provider_Product_Info);
 
     // コードから読み取った文字列
-    String codeValue = scandata?.barcodes.first.rawValue ?? 'null';
+    String codeValue = scandata?.barcodes.first.rawValue ?? '-----';
     // コードのタイプを示すオブジェクト
     BarcodeType? codeType = scandata?.barcodes.first.type;
     // コードのタイプを文字列にする
     String cardTitle = "[${'$codeType'.split('.').last}]";
 
     // 商品情報のブランド
-    String brandName =
-        productInfo != null ? productInfo['product']['brands'] : '';
+    String brandName = productInfo?['product']?['brands'] ?? '未登録';
     // 商品情報の商品名
-    String productName =
-        productInfo != null ? productInfo['product']['product_name'] : '';
+    String productName = productInfo?['product']?['product_name'] ?? '未登録';
     // 商品情報の生産国
-    String countryName =
-        productInfo != null ? productInfo['product']['countries'] : '';
-    // 商品情報の画像URL
-    String imageSmallUrl = productInfo != null
-        ? productInfo['product']['image_front_small_url']
-        : '';
-    // 商品情報のサムネ画像URL
-    String imageThumbUrl = productInfo != null
-        ? productInfo['product']['image_front_thumb_url']
-        : '';
-    // 商品情報のサムネ画像URL
-    String imageUrl =
-        productInfo != null ? productInfo['product']['image_url'] : '';
+    String countryName = productInfo?['product']?['countries'] ?? '未登録';
+    String imageUrl = productInfo?['product']?['image_url'] ?? '';
     // 商品情報の容量
-    String quantity =
-        productInfo != null ? productInfo['product']['quantity'] : '';
+    String quantity = productInfo?['product']?['quantity'] ?? '未登録';
 
     return Scaffold(
       backgroundColor: Colors.pink[50],
@@ -179,32 +166,84 @@ class PageDetail extends ConsumerWidget {
                 style: TextStyle(fontSize: 18),
               ),
             ),
+            // ◆URLがある場合のみ画像を表示するよう修正
+            // ◆空のURLだと例外が出てしまう。
             Padding(
               padding: const EdgeInsets.only(top: 8, left: 50),
-              child: Image.network(
-                imageUrl,
-                width: 150, // adjust the width as needed
-                height: 150, // adjust the height as needed
-                fit: BoxFit.cover, // adjust the fit as needed
-              ),
+              child: (imageUrl != '')
+                  ? Image.network(
+                      imageUrl,
+                      width: 150, // adjust the width as needed
+                      height: 150, // adjust the height as needed
+                      fit: BoxFit.cover, // adjust the fit as needed
+                    )
+                  : Text(
+                      'No Image',
+                      style: TextStyle(fontSize: 18),
+                    ),
             ),
             Expanded(child: Container()),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pink[200],
-                minimumSize: Size(double.infinity, 60.0),
-              ),
-              onPressed: () {
-                ref.read(Provider_Product_Info.notifier).state = null;
-                Navigator.pushReplacementNamed(context, '/');
-              },
-              child: Text(
-                'ホーム',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 26,
-                ),
-                // style: TextStyle(fontSize: 20, color: Colors.white),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: Size.fromHeight(60),
+                        backgroundColor: Colors.amber[300],
+                      ),
+                      onPressed: () async {
+                        if (productInfo != null) {
+                          // 商品情報をSQLiteデータベースに保存
+                          await insertProduct({
+                            'barcode': codeValue,
+                            'brandName': brandName,
+                            'productName': productName,
+                            'countryName': countryName,
+                            'quantity': quantity,
+                            'imageUrl': imageUrl,
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('商品情報を保存しました'),
+                            ),
+                          );
+                        }
+                      },
+                      child: Text(
+                        '保　存',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 26,
+                        ),
+                        // style: TextStyle(fontSize: 20, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: Size.fromHeight(60),
+                        backgroundColor: Colors.pink[200],
+                      ),
+                      onPressed: () {
+                        ref.read(Provider_Product_Info.notifier).state = null;
+                        Navigator.pushReplacementNamed(context, '/');
+                      },
+                      child: Text(
+                        'ホーム',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 26,
+                        ),
+                        // style: TextStyle(fontSize: 20, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

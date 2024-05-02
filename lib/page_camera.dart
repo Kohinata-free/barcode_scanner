@@ -11,9 +11,11 @@ class PageCamera extends ConsumerWidget {
     title: '食品バーコードリーダー',
   );
   // カメラがオンしているかどうか
-  bool isStarted = true;
+  final bool isStarted = true;
   // ズームの程度。0から1まで。多いほど近い
-  double zoomFactor = 0.0;
+  final double zoomFactor = 0.0;
+
+  PageCamera({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
