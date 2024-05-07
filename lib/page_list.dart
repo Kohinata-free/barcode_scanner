@@ -5,14 +5,7 @@ import 'appbar_component_widget.dart';
 import 'package:barcode_scanner/db_operator.dart';
 
 class PageList extends ConsumerWidget {
-  PageList({super.key});
-
-  List<Map<String, dynamic>> _products = [];
-
-  // Future<void> retrieveProductList() async {
-  //   List<Map<String, dynamic>> products = await retrieveProducts();
-  //   _products = products;
-  // }
+  const PageList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,8 +16,6 @@ class PageList extends ConsumerWidget {
 
     // 商品情報リスト
     final productList = ref.watch(Provider_Products_List);
-    final productTest = ['リンゴ', 'バナナ'];
-    // retrieveProductList();
 
     return Scaffold(
       backgroundColor: Colors.pink[50],
@@ -71,10 +62,6 @@ class PageList extends ConsumerWidget {
             ),
           ),
 
-          // Text('no item'),
-          // Text(productList?.isEmpty ?? true
-          //     ? 'no item2'
-          //     : productList?[0]['productName'] ?? 'no item3'),
           Flexible(
             child: ListView.builder(
               itemCount: productList?.length ?? 0,
@@ -107,9 +94,24 @@ class PageList extends ConsumerWidget {
                           onPressed: () {
                             // ◆Riverpodで値を設定する(オブジェクトで持っちゃってるので詳細画面の作りも変える必要がある)
                             // ◆詳細画面に遷移します
-                            // final Map<String, dynamic>? productInfo = {
-                            //   'barcode' : 'dummy'
-                            // };
+                            final Map<String, dynamic> productInfo = {
+                              'product': {
+                                'barcode': productList[index]['barcode'],
+                                'product_name': productList[index]
+                                    ['productName'],
+                                'brands': productList[index]['brandName'],
+                                'countries': productList[index]['countryName'],
+                                'quantity': productList[index]['quantity'],
+                                'image_url': productList[index]['imageUrl'],
+                              },
+                              // 'brandName': '12345',
+                              // 'countryName': '12345',
+                              // 'quantity': 'quantity',
+                              // 'productName': '12345'
+                            };
+                            ref.read(Provider_Product_Info.notifier).state =
+                                productInfo;
+                            Navigator.pushNamed(context, '/page_detail');
                           },
                         ),
                       ),

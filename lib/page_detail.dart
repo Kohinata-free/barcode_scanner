@@ -40,11 +40,21 @@ class PageDetail extends ConsumerWidget {
     final productInfo = ref.watch(Provider_Product_Info);
 
     // コードから読み取った文字列
-    String codeValue = scandata?.barcodes.first.rawValue ?? '-----';
+    // String codeValue = scandata?.barcodes.first.rawValue ?? '-----';
+    // String codeValue = productInfo != null
+    //     ? productInfo['product']['barcode']
+    //     : scandata?.barcodes.first.rawValue ?? '-----';
+
+    String codeValue = scandata != null
+        ? scandata.barcodes.first.rawValue
+        : productInfo?['product']['barcode'] ?? '-----';
+
     // コードのタイプを示すオブジェクト
     BarcodeType? codeType = scandata?.barcodes.first.type;
     // コードのタイプを文字列にする
-    String cardTitle = "[${'$codeType'.split('.').last}]";
+    String cardTitle =
+        codeType != null ? "[${'$codeType'.split('.').last}]" : '-----';
+    // if(codeType != null)"[${'$codeType'.split('.').last}]";
 
     // 商品情報のブランド
     String brandName = productInfo?['product']?['brands'] ?? '未登録';
@@ -230,6 +240,7 @@ class PageDetail extends ConsumerWidget {
                         backgroundColor: Colors.pink[200],
                       ),
                       onPressed: () {
+                        ref.read(Provider_Barcode_Info.notifier).state = null;
                         ref.read(Provider_Product_Info.notifier).state = null;
                         Navigator.pushReplacementNamed(context, '/');
                       },
