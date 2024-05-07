@@ -13,6 +13,12 @@ final Provider_Product_Info = StateProvider<Map<String, dynamic>?>((ref) {
   return null;
 });
 
+// 商品情報リストを共有する
+final Provider_Products_List =
+    StateProvider<List<Map<String, dynamic>>?>((ref) {
+  return null;
+});
+
 class Home extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -1,18 +1,20 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 const String db_name = 'products_database.db';
 
 // SQLiteデータベースの初期化
 Future<Database> initDatabase() async {
-  return openDatabase(
-    join(await getDatabasesPath(), db_name),
-    onCreate: (db, version) {
-      return db.execute(
-        "CREATE TABLE products(barcode TEXT PRIMARY KEY, brandName TEXT, productName TEXT, countryName TEXT, quantity TEXT, imageUrl TEXT)",
+  return await openDatabase(
+    // join(await getDatabasesPath(), db_name),
+    db_name,
+    version: 1,
+    onCreate: (db, version) async {
+      return await db.execute(
+        "CREATE TABLE IF NOT EXISTS products(barcode TEXT PRIMARY KEY, brandName TEXT, productName TEXT, countryName TEXT, quantity TEXT, imageUrl TEXT)",
       );
     },
-    version: 1,
   );
 }
 
