@@ -1,9 +1,17 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:barcode_scanner/home.dart';
 import 'package:barcode_scanner/appbar_component_widget.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
+// 音源を再生します
+Future<void> playSound(String source) async {
+  AudioPlayer audioPlayer = AudioPlayer();
+  await audioPlayer.play(AssetSource(source));
+  // audioPlayer.dispose();
+}
 
 class PageCamera extends ConsumerWidget {
   // AppBar
@@ -48,9 +56,12 @@ class PageCamera extends ConsumerWidget {
                 fit: BoxFit.cover,
                 // fit: BoxFit.contain,
                 // QRコードかバーコードが見つかった後すぐ実行する関数
-                onDetect: (scandata) {
+                onDetect: (scandata) async {
                   controller.stop(); // まずはカメラを止める
                   ref.read(Provider_Barcode_Info.notifier).state = scandata;
+                  // 検知音を鳴らす
+                  playSound('sounds/chimes.wav');
+
                   // 結果を表す画面に切り替える
                   Navigator.pushNamed(context, '/page_detail');
                 },
