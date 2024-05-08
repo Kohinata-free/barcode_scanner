@@ -33,3 +33,13 @@ Future<List<Map<String, dynamic>>> retrieveProducts() async {
   final Database db = await initDatabase();
   return await db.query('products');
 }
+
+// 商品情報をSQLiteデータベースから削除する
+Future<void> deleteProduct(String barcode) async {
+  final Database db = await initDatabase();
+  await db.delete(
+    'products',
+    where: "barcode = ?",
+    whereArgs: [barcode],
+  );
+}

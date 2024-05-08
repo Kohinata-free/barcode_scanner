@@ -74,45 +74,95 @@ class PageList extends ConsumerWidget {
                       productList[index]['countryName'] +
                       '/' +
                       productList[index]['quantity'];
-                  return Card(
-                    color: Colors.blue[100],
-                    child: ListTile(
-                      title: Text(
-                        productList[index]['productName'] ?? '',
-                        style: TextStyle(fontSize: 20),
+                  return Dismissible(
+                    key: UniqueKey(),
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 20.0),
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
-                      subtitle: Text(
-                        subtext,
-                        style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                      ),
-                      trailing: Container(
-                        width: 20,
-                        alignment: Alignment.centerRight,
-                        child: IconButton(
-                          color: Colors.black,
-                          icon: Icon(Icons.arrow_forward_rounded),
-                          onPressed: () {
-                            // ◆Riverpodで値を設定する(オブジェクトで持っちゃってるので詳細画面の作りも変える必要がある)
-                            // ◆詳細画面に遷移します
-                            final Map<String, dynamic> productInfo = {
-                              'product': {
-                                'barcode': productList[index]['barcode'],
-                                'product_name': productList[index]
-                                    ['productName'],
-                                'brands': productList[index]['brandName'],
-                                'countries': productList[index]['countryName'],
-                                'quantity': productList[index]['quantity'],
-                                'image_url': productList[index]['imageUrl'],
-                              },
-                              // 'brandName': '12345',
-                              // 'countryName': '12345',
-                              // 'quantity': 'quantity',
-                              // 'productName': '12345'
-                            };
-                            ref.read(Provider_Product_Info.notifier).state =
-                                productInfo;
-                            Navigator.pushNamed(context, '/page_detail');
-                          },
+                    ),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) async {
+                      // ◆削除を実行した際の処理
+                      // ◆DBから削除
+                      deleteProduct(productList[index]['barcode']);
+                      // ◆リストを更新⇒DBから再取得しなくても、画面上は削除される
+                      var products = await retrieveProducts();
+                      ref.read(Provider_Products_List.notifier).state =
+                          products;
+                    },
+                    confirmDismiss: (direction) async {
+                      return await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Confirm'),
+                            content: Text('Are you want to delete this item?'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text('CANCEL'),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: Text('DELETE'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Card(
+                      color: Colors.blue[100],
+                      child: ListTile(
+                        title: Text(
+                          productList[index]['productName'] ?? '',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        subtitle: Text(
+                          subtext,
+                          style:
+                              TextStyle(fontSize: 16, color: Colors.grey[700]),
+                        ),
+                        trailing: Container(
+                          width: 20,
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            color: Colors.black,
+                            icon: Icon(Icons.arrow_forward_rounded),
+                            onPressed: () {
+                              // ◆Riverpodで値を設定する(オブジェクトで持っちゃってるので詳細画面の作りも変える必要がある)
+                              // ◆詳細画面に遷移します
+                              final Map<String, dynamic> productInfo = {
+                                'product': {
+                                  'barcode': productList[index]['barcode'],
+                                  'product_name': productList[index]
+                                      ['productName'],
+                                  'brands': productList[index]['brandName'],
+                                  'countries': productList[index]
+                                      ['countryName'],
+                                  'quantity': productList[index]['quantity'],
+                                  'image_url': productList[index]['imageUrl'],
+                                },
+                              };
+                              ref.read(Provider_Product_Info.notifier).state =
+                                  productInfo;
+                              Navigator.pushNamed(context, '/page_detail');
+                            },
+                          ),
                         ),
                       ),
                     ),

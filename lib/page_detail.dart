@@ -54,7 +54,6 @@ class PageDetail extends ConsumerWidget {
     // コードのタイプを文字列にする
     String cardTitle =
         codeType != null ? "[${'$codeType'.split('.').last}]" : '-----';
-    // if(codeType != null)"[${'$codeType'.split('.').last}]";
 
     // 商品情報のブランド
     String brandName = productInfo?['product']?['brands'] ?? '未登録';
