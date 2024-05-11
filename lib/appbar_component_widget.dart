@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppBarComponentWidget extends StatelessWidget
     implements PreferredSizeWidget {
@@ -15,7 +16,7 @@ class AppBarComponentWidget extends StatelessWidget
     return AppBar(
       backgroundColor: Colors.pink[200],
       leading: Padding(
-        padding: const EdgeInsets.only(left: 8.0, top: 4.0, bottom: 4.0),
+        padding: const EdgeInsets.only(left: 8.0, top: 8.0, bottom: 2.0),
         child: Image.asset(
           'assets/images/TK-free_Circle.png',
           height: 40,
@@ -23,9 +24,27 @@ class AppBarComponentWidget extends StatelessWidget
         ),
       ),
       title: Padding(
-        padding: const EdgeInsets.only(top: 10.0),
-        child: Text(title),
+        padding: const EdgeInsets.only(top: 0.0),
+        child: Text(
+          title,
+          style: GoogleFonts.hachiMaruPop(
+            fontSize: 24,
+          ),
+        ),
       ),
+      actions: [
+        IconButton(
+          padding: EdgeInsets.only(top: 8),
+          color: Colors.blue,
+          iconSize: 30,
+          alignment: Alignment.center,
+          icon: Icon(Icons.info_outline),
+          onPressed: () {
+            // ライセンス画面表示
+            showLicensePage(context: context);
+          },
+        ),
+      ],
     );
   }
 }

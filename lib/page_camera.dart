@@ -97,6 +97,7 @@ class PageCamera extends ConsumerWidget {
                         backgroundColor: Colors.amber[200],
                       ),
                       onPressed: () {
+                        controller.stop(); // まずはカメラを止める
                         Navigator.pushNamed(context, '/page_detail');
                       },
                       child: Text(

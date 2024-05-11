@@ -148,7 +148,7 @@ class PageList extends ConsumerWidget {
                               // ◆詳細画面に遷移します
                               final Map<String, dynamic> productInfo = {
                                 'product': {
-                                  'barcode': productList[index]['barcode'],
+                                  'code': productList[index]['barcode'],
                                   'product_name': productList[index]
                                       ['productName'],
                                   'brands': productList[index]['brandName'],
