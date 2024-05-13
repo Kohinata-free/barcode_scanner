@@ -1,11 +1,8 @@
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/home.dart';
-// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:barcode_scanner/appbar_component_widget.dart';
-// import 'package:mobile_scanner/mobile_scanner.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -42,12 +39,6 @@ class PageDetail extends ConsumerWidget {
     String codeValue = scandata != null
         ? scandata.barcodes.first.rawValue
         : productInfo?['product']['code'] ?? '-----';
-
-    // // コードのタイプを示すオブジェクト
-    // BarcodeType? codeType = scandata?.barcodes.first.type;
-    // // コードのタイプを文字列にする
-    // String cardTitle =
-    //     codeType != null ? "[${'$codeType'.split('.').last}]" : '-----';
 
     // 商品情報のブランド
     String brandName = productInfo?['product']?['brands'] ?? '未登録';
@@ -97,13 +88,6 @@ class PageDetail extends ConsumerWidget {
                   style: TextStyle(fontSize: 18),
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 8, left: 50),
-              //   child: Text(
-              //     '[コードの種類] ${cardTitle}',
-              //     style: TextStyle(fontSize: 18),
-              //   ),
-              // ),
               Container(
                 margin: EdgeInsets.symmetric(
                   vertical: 10,
@@ -281,7 +265,6 @@ class PageDetail extends ConsumerWidget {
                 ),
               ),
               // ◆URLがある場合のみ画像を表示するよう修正
-              // ◆空のURLだと例外が出てしまう。
               Align(
                 alignment: Alignment.center,
                 child: Padding(

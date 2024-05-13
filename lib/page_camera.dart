@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:barcode_scanner/db_operator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -62,6 +63,25 @@ class PageCamera extends ConsumerWidget {
                   // 検知音を鳴らす
                   playSound('sounds/chimes.wav');
 
+                  // ◆データベースに存在する場合、取得する
+                  final Map<String, dynamic>? product =
+                      await retrieveProductByBarcode(
+                          scandata.barcodes.first.rawValue!);
+                  if (product != null) {
+                    final Map<String, dynamic> productInfo = {
+                      'product': {
+                        'code': product['barcode'],
+                        'product_name': product['productName'],
+                        'brands': product['brandName'],
+                        'countries': product['countryName'],
+                        'quantity': product['quantity'],
+                        'image_url': product['imageUrl'],
+                      },
+                    };
+                    ref.read(Provider_Product_Info.notifier).state =
+                        productInfo;
+                  }
+
                   // 結果を表す画面に切り替える
                   Navigator.pushNamed(context, '/page_detail');
                 },
@@ -90,22 +110,22 @@ class PageCamera extends ConsumerWidget {
                     ),
                   ),
                   SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: Size.fromHeight(60),
-                        backgroundColor: Colors.amber[200],
-                      ),
-                      onPressed: () {
-                        controller.stop(); // まずはカメラを止める
-                        Navigator.pushNamed(context, '/page_detail');
-                      },
-                      child: Text(
-                        '詳細',
-                        style: TextStyle(color: Colors.black, fontSize: 26),
-                      ),
-                    ),
-                  ),
+                  // Expanded(
+                  //   child: ElevatedButton(
+                  //     style: ElevatedButton.styleFrom(
+                  //       fixedSize: Size.fromHeight(60),
+                  //       backgroundColor: Colors.amber[200],
+                  //     ),
+                  //     onPressed: () {
+                  //       controller.stop(); // まずはカメラを止める
+                  //       Navigator.pushNamed(context, '/page_detail');
+                  //     },
+                  //     child: Text(
+                  //       '詳細',
+                  //       style: TextStyle(color: Colors.black, fontSize: 26),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

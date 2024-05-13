@@ -1,6 +1,7 @@
 import 'package:barcode_scanner/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'appbar_component_widget.dart';
 import 'package:barcode_scanner/db_operator.dart';
 
@@ -16,6 +17,9 @@ class PageList extends ConsumerWidget {
 
     // 商品情報リスト
     final productList = ref.watch(Provider_Products_List);
+
+    // 進捗
+    final progress = ref.watch(Provider_progress);
 
     return Scaffold(
       backgroundColor: Colors.pink[50],
@@ -50,8 +54,10 @@ class PageList extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
               ),
               onPressed: () async {
+                ref.read(Provider_progress.notifier).state = true;
                 var products = await retrieveProducts();
                 ref.read(Provider_Products_List.notifier).state = products;
+                ref.read(Provider_progress.notifier).state = false;
               },
               child: Text(
                 '更　新',
@@ -61,6 +67,8 @@ class PageList extends ConsumerWidget {
               ),
             ),
           ),
+
+          if (progress) CircularProgressIndicator(), // ローディングインジケーター
 
           Flexible(
             child: ListView.builder(

@@ -19,6 +19,11 @@ final Provider_Products_List =
   return null;
 });
 
+// 進捗インジケーター
+final Provider_progress = StateProvider((ref) {
+  return false;
+});
+
 class Home extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {

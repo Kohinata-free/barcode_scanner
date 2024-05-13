@@ -34,6 +34,22 @@ Future<List<Map<String, dynamic>>> retrieveProducts() async {
   return await db.query('products');
 }
 
+// 商品情報をSQLiteデータベースから取得する（barcodeを指定して1件取得）
+Future<Map<String, dynamic>?> retrieveProductByBarcode(String barcode) async {
+  final Database db = await initDatabase();
+  List<Map<String, dynamic>> products = await db.query(
+    'products',
+    where: 'barcode = ?',
+    whereArgs: [barcode],
+    limit: 1, // 1件のみ取得する
+  );
+  if (products.isNotEmpty) {
+    return products.first;
+  } else {
+    return null; // 該当する商品が見つからない場合はnullを返す
+  }
+}
+
 // 商品情報をSQLiteデータベースから削除する
 Future<void> deleteProduct(String barcode) async {
   final Database db = await initDatabase();
