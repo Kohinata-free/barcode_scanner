@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:barcode_scanner/db_operator.dart';
+import 'package:barcode_scanner/page_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -80,6 +81,22 @@ class PageCamera extends ConsumerWidget {
                     };
                     ref.read(Provider_Product_Info.notifier).state =
                         productInfo;
+                  } else {
+                    // ◆バーコードからOpen Food Facts APIで情報を取得する
+                    final Map<String, dynamic>? productInfo =
+                        await fetchProductInfo(
+                            scandata.barcodes.first.rawValue!);
+
+                    if (productInfo != null) {
+                      // 商品名を取得
+                      final String productName =
+                          productInfo['product']['product_name'];
+                      print('製品名=$productName');
+
+                      // ◆続きはここから
+                      ref.read(Provider_Product_Info.notifier).state =
+                          productInfo;
+                    }
                   }
 
                   // 結果を表す画面に切り替える
