@@ -29,6 +29,7 @@ class PageDetail extends ConsumerWidget {
   final appBar = AppBarComponentWidget(
     title: '食品バーコードリーダー',
   );
+
   @override
   Widget build(BuildContext context, ref) {
     // バーコード
@@ -156,6 +157,7 @@ class PageDetail extends ConsumerWidget {
                         controller: _brandNameController,
                         onChanged: (newBrandName) {
                           brandName = newBrandName;
+                          productInfo?['product']?['brands'] = newBrandName;
                         },
                         decoration: InputDecoration(
                           contentPadding:
@@ -187,6 +189,8 @@ class PageDetail extends ConsumerWidget {
                         controller: _productNameController,
                         onChanged: (newProductName) {
                           productName = newProductName;
+                          productInfo?['product']?['product_name'] =
+                              newProductName;
                         },
                         decoration: InputDecoration(
                           contentPadding:
@@ -218,6 +222,8 @@ class PageDetail extends ConsumerWidget {
                         controller: _countryNameController,
                         onChanged: (newCountryName) {
                           countryName = newCountryName;
+                          productInfo?['product']?['countries'] =
+                              newCountryName;
                         },
                         decoration: InputDecoration(
                           contentPadding:
@@ -249,6 +255,7 @@ class PageDetail extends ConsumerWidget {
                         controller: _quantityController,
                         onChanged: (newQuantity) {
                           quantity = newQuantity;
+                          productInfo?['product']?['quantity'] = newQuantity;
                         },
                         decoration: InputDecoration(
                           contentPadding:
@@ -311,6 +318,11 @@ class PageDetail extends ConsumerWidget {
                               ),
                             );
                           }
+                          ref.read(Provider_progress.notifier).state = true;
+                          var products = await retrieveProducts();
+                          ref.read(Provider_Products_List.notifier).state =
+                              products;
+                          ref.read(Provider_progress.notifier).state = false;
                         },
                         child: Text(
                           '保　存',
@@ -332,7 +344,13 @@ class PageDetail extends ConsumerWidget {
                         onPressed: () {
                           ref.read(Provider_Barcode_Info.notifier).state = null;
                           ref.read(Provider_Product_Info.notifier).state = null;
-                          Navigator.pushReplacementNamed(context, '/');
+                          Navigator.pushReplacementNamed(context, '/')
+                              .then((_) {
+                            ref.read(Provider_Barcode_Info.notifier).state =
+                                null;
+                            ref.read(Provider_Product_Info.notifier).state =
+                                null;
+                          });
                         },
                         child: Text(
                           'ホーム',
