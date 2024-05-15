@@ -4,17 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'appbar_component_widget.dart';
 import 'package:barcode_scanner/db_operator.dart';
+import 'package:barcode_scanner/main.dart';
 
 class PageList extends ConsumerWidget {
   const PageList({super.key});
 
   // ◆初期化処理をしたい
-  // Future Initialize(WidgetRef ref) async {
-  //   ref.read(Provider_progress.notifier).state = true;
-  //   var products = await retrieveProducts();
-  //   ref.read(Provider_Products_List.notifier).state = products;
-  //   ref.read(Provider_progress.notifier).state = false;
-  // }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,9 +35,9 @@ class PageList extends ConsumerWidget {
             children: <Widget>[
               // タイトル
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 alignment: Alignment.center,
-                child: Text(
+                child: const Text(
                   '商品リスト',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -52,17 +47,17 @@ class PageList extends ConsumerWidget {
               ),
 
               // ■並び替えラジオボタン
-              Text('並び替えボタンを置くよ'),
+              const Text('並び替えボタンを置くよ'),
 
               // ■商品リスト
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 4.0),
                   ),
                   onPressed: () async {
                     ref.read(Provider_progress.notifier).state = true;
@@ -70,7 +65,7 @@ class PageList extends ConsumerWidget {
                     ref.read(Provider_Products_List.notifier).state = products;
                     ref.read(Provider_progress.notifier).state = false;
                   },
-                  child: Text(
+                  child: const Text(
                     '更　新',
                     style: TextStyle(
                       fontSize: 24,
@@ -96,11 +91,11 @@ class PageList extends ConsumerWidget {
                         background: Container(
                           color: Colors.red,
                           alignment: Alignment.centerLeft,
-                          child: Row(
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(right: 20.0),
+                                padding: EdgeInsets.only(right: 20.0),
                                 child: Icon(
                                   Icons.delete,
                                   color: Colors.white,
@@ -124,19 +119,19 @@ class PageList extends ConsumerWidget {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Confirm'),
-                                content:
-                                    Text('Are you want to delete this item?'),
+                                title: const Text('Confirm'),
+                                content: const Text(
+                                    'Are you want to delete this item?'),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.of(context).pop(false),
-                                    child: Text('CANCEL'),
+                                    child: const Text('CANCEL'),
                                   ),
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.of(context).pop(true),
-                                    child: Text('DELETE'),
+                                    child: const Text('DELETE'),
                                   ),
                                 ],
                               );
@@ -148,7 +143,7 @@ class PageList extends ConsumerWidget {
                           child: ListTile(
                             title: Text(
                               productList[index]['productName'] ?? '',
-                              style: TextStyle(fontSize: 20),
+                              style: const TextStyle(fontSize: 20),
                             ),
                             subtitle: Text(
                               subtext,
@@ -160,7 +155,7 @@ class PageList extends ConsumerWidget {
                               alignment: Alignment.centerRight,
                               child: IconButton(
                                 color: Colors.black,
-                                icon: Icon(Icons.arrow_forward_rounded),
+                                icon: const Icon(Icons.arrow_forward_rounded),
                                 onPressed: () {
                                   // ◆Riverpodで値を設定する(オブジェクトで持っちゃってるので詳細画面の作りも変える必要がある)
                                   // ◆詳細画面に遷移します
@@ -181,6 +176,11 @@ class PageList extends ConsumerWidget {
                                   ref
                                       .read(Provider_Product_Info.notifier)
                                       .state = productInfo;
+                                  ref
+                                      .read(Provider_Initialized.notifier)
+                                      .state = false;
+
+                                  pageDetail.initialized = false;
                                   Navigator.pushNamed(context, '/page_detail');
                                 },
                               ),
@@ -189,7 +189,7 @@ class PageList extends ConsumerWidget {
                         ),
                       );
                     } else {
-                      return Text('No Items');
+                      return const Text('No Items');
                     }
                   },
                 ),
@@ -200,19 +200,21 @@ class PageList extends ConsumerWidget {
 
               // 読み取り開始ボタン
               Container(
-                margin: EdgeInsets.all(8),
+                margin: const EdgeInsets.all(8),
                 child: ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(
-                      Color.fromARGB(255, 244, 143, 177),
+                      const Color.fromARGB(255, 244, 143, 177),
                     ),
-                    minimumSize:
-                        MaterialStateProperty.all(Size(double.infinity, 60.0)),
+                    minimumSize: MaterialStateProperty.all(
+                        const Size(double.infinity, 60.0)),
                   ),
                   onPressed: () {
+                    pageDetail.initialized = false;
+
                     Navigator.pushNamed(context, '/page_camera');
                   },
-                  child: Text(
+                  child: const Text(
                     '読み取り開始',
                     style: TextStyle(
                       color: Colors.black,
@@ -226,7 +228,7 @@ class PageList extends ConsumerWidget {
           if (progress)
             Container(
               color: Colors.black54,
-              child: Center(
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             ),

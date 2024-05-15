@@ -43,7 +43,7 @@ class PageCamera extends ConsumerWidget {
             Container(
               padding: EdgeInsets.all(8),
               alignment: Alignment.center,
-              child: Text(
+              child: const Text(
                 '読み取り中・・・',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -98,6 +98,7 @@ class PageCamera extends ConsumerWidget {
                           productInfo;
                     }
                   }
+                  ref.read(Provider_Initialized.notifier).state = false;
 
                   // 結果を表す画面に切り替える
                   Navigator.pushNamed(context, '/page_detail');
@@ -113,36 +114,20 @@ class PageCamera extends ConsumerWidget {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        fixedSize: Size.fromHeight(60),
+                        fixedSize: const Size.fromHeight(60),
                         backgroundColor: Colors.green[200],
                       ),
                       onPressed: () {
                         controller.stop(); // まずはカメラを止める
                         Navigator.pop(context);
                       },
-                      child: Text(
+                      child: const Text(
                         '戻る',
                         style: TextStyle(color: Colors.black, fontSize: 26),
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
-                  // Expanded(
-                  //   child: ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //       fixedSize: Size.fromHeight(60),
-                  //       backgroundColor: Colors.amber[200],
-                  //     ),
-                  //     onPressed: () {
-                  //       controller.stop(); // まずはカメラを止める
-                  //       Navigator.pushNamed(context, '/page_detail');
-                  //     },
-                  //     child: Text(
-                  //       '詳細',
-                  //       style: TextStyle(color: Colors.black, fontSize: 26),
-                  //     ),
-                  //   ),
-                  // ),
+                  const SizedBox(width: 8),
                 ],
               ),
             ),

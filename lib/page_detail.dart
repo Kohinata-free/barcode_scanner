@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/home.dart';
 import 'package:flutter/material.dart';
@@ -24,11 +26,30 @@ Future<Map<String, dynamic>?> fetchProductInfo(String barcode) async {
   return null;
 }
 
+// ignore: must_be_immutable
 class PageDetail extends ConsumerWidget {
+  PageDetail({super.key});
+
   // AppBar
   final appBar = AppBarComponentWidget(
     title: '食品バーコードリーダー',
   );
+
+  // 初期化:TextEditingControllerのTextに随時値を設定すると、カーソルが先頭に移ってしまう為、更新したい場合のみ設定するためのフラグを用意し、他画面からもフラグを設定できるようにする
+  bool initialized = false;
+  String codeValue = '-----';
+  // TextEditingControllerのTextに設定する変数
+  String _brandName = '未登録';
+  String _productName = '未登録';
+  String _countryName = '未登録';
+  String _imageUrl = '';
+  String _quantity = '未登録';
+
+  // TextEditingController:TextFieldに初期値を与えるために使用
+  late TextEditingController _brandNameController;
+  late TextEditingController _productNameController;
+  late TextEditingController _countryNameController;
+  late TextEditingController _quantityController;
 
   @override
   Widget build(BuildContext context, ref) {
@@ -37,32 +58,26 @@ class PageDetail extends ConsumerWidget {
     // 商品情報
     final productInfo = ref.watch(Provider_Product_Info);
 
-    String codeValue = scandata != null
+    String _codeValue = scandata != null
         ? scandata.barcodes.first.rawValue
         : productInfo?['product']['code'] ?? '-----';
 
     // 商品情報のブランド
-    String brandName = productInfo?['product']?['brands'] ?? '未登録';
-    // 商品情報の商品名
-    String productName = productInfo?['product']?['product_name'] ?? '未登録';
-    // 商品情報の生産国
-    String countryName = productInfo?['product']?['countries'] ?? '未登録';
-    String imageUrl = productInfo?['product']?['image_url'] ?? '';
-    // 商品情報の容量
-    String quantity = productInfo?['product']?['quantity'] ?? '未登録';
-
-    // ブランド名編集コントローラー
-    TextEditingController _brandNameController =
-        TextEditingController(text: '$brandName');
-    // 商品名編集コントローラー
-    TextEditingController _productNameController =
-        TextEditingController(text: '$productName');
-    // 生産国名編集コントローラー
-    TextEditingController _countryNameController =
-        TextEditingController(text: '$countryName');
-    // 容量編集コントローラー
-    TextEditingController _quantityController =
-        TextEditingController(text: '$quantity');
+    if (!initialized) {
+      _codeValue = scandata != null
+          ? scandata.barcodes.first.rawValue
+          : productInfo?['product']['code'] ?? '-----';
+      _brandName = productInfo?['product']?['brands'] ?? '未登録';
+      _brandNameController = TextEditingController(text: _brandName);
+      _productName = productInfo?['product']?['product_name'] ?? '未登録';
+      _productNameController = TextEditingController(text: _productName);
+      _countryName = productInfo?['product']?['countries'] ?? '未登録';
+      _countryNameController = TextEditingController(text: _countryName);
+      _imageUrl = productInfo?['product']?['image_url'] ?? '';
+      _quantity = productInfo?['product']?['quantity'] ?? '未登録';
+      _quantityController = TextEditingController(text: _quantity);
+      initialized = true;
+    }
 
     return Scaffold(
       backgroundColor: Colors.pink[50],
@@ -85,17 +100,17 @@ class PageDetail extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 8, left: 50),
                 child: Text(
-                  '[コード値] ${codeValue}',
+                  '[コード値] ${_codeValue}',
                   style: TextStyle(fontSize: 18),
                 ),
               ),
               Container(
-                margin: EdgeInsets.symmetric(
+                margin: const EdgeInsets.symmetric(
                   vertical: 10,
                   horizontal: 10,
                 ),
                 height: 1,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
                       color: Colors.grey,
@@ -122,7 +137,7 @@ class PageDetail extends ConsumerWidget {
                   onPressed: () async {
                     // ◆バーコードからOpen Food Facts APIで情報を取得する
                     final Map<String, dynamic>? productInfo =
-                        await fetchProductInfo('${codeValue}');
+                        await fetchProductInfo('${_codeValue}');
 
                     if (productInfo != null) {
                       // 商品名を取得
@@ -133,9 +148,10 @@ class PageDetail extends ConsumerWidget {
                       // ◆続きはここから
                       ref.read(Provider_Product_Info.notifier).state =
                           productInfo;
+                      initialized = false;
                     }
                   },
-                  child: Text(
+                  child: const Text(
                     '情報取得',
                     style: TextStyle(fontSize: 20),
                   ),
@@ -145,21 +161,21 @@ class PageDetail extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 0, left: 50, right: 8),
                 child: Row(
                   children: [
-                    Text(
+                    const Text(
                       '[ブランド名] ',
                       style: TextStyle(fontSize: 18),
                     ),
                     Expanded(
                       child: TextField(
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                         ),
                         controller: _brandNameController,
                         onChanged: (newBrandName) {
-                          brandName = newBrandName;
+                          _brandName = newBrandName;
                           productInfo?['product']?['brands'] = newBrandName;
                         },
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
                           focusedBorder: UnderlineInputBorder(
@@ -177,22 +193,22 @@ class PageDetail extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 0, left: 50, right: 8),
                 child: Row(
                   children: [
-                    Text(
+                    const Text(
                       '[商品名] ',
                       style: TextStyle(fontSize: 18),
                     ),
                     Expanded(
                       child: TextField(
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                         ),
                         controller: _productNameController,
                         onChanged: (newProductName) {
-                          productName = newProductName;
+                          _productName = newProductName;
                           productInfo?['product']?['product_name'] =
                               newProductName;
                         },
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
                           focusedBorder: UnderlineInputBorder(
@@ -210,22 +226,22 @@ class PageDetail extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 8, left: 50, right: 8),
                 child: Row(
                   children: [
-                    Text(
+                    const Text(
                       '[生産国] ',
                       style: TextStyle(fontSize: 18),
                     ),
                     Expanded(
                       child: TextField(
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                         ),
                         controller: _countryNameController,
                         onChanged: (newCountryName) {
-                          countryName = newCountryName;
+                          _countryName = newCountryName;
                           productInfo?['product']?['countries'] =
                               newCountryName;
                         },
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
                           focusedBorder: UnderlineInputBorder(
@@ -243,21 +259,21 @@ class PageDetail extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 8, left: 50, right: 8),
                 child: Row(
                   children: [
-                    Text(
+                    const Text(
                       '[容量] ',
                       style: TextStyle(fontSize: 18),
                     ),
                     Expanded(
                       child: TextField(
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                         ),
                         controller: _quantityController,
                         onChanged: (newQuantity) {
-                          quantity = newQuantity;
+                          _quantity = newQuantity;
                           productInfo?['product']?['quantity'] = newQuantity;
                         },
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
                           focusedBorder: UnderlineInputBorder(
@@ -276,14 +292,14 @@ class PageDetail extends ConsumerWidget {
                 alignment: Alignment.center,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 8, bottom: 8),
-                  child: (imageUrl != '')
+                  child: (_imageUrl != '')
                       ? Image.network(
-                          imageUrl,
+                          _imageUrl,
                           width: 130, // adjust the width as needed
                           height: 130, // adjust the height as needed
                           fit: BoxFit.cover, // adjust the fit as needed
                         )
-                      : Text(
+                      : const Text(
                           'No Image',
                           style: TextStyle(fontSize: 18),
                         ),
@@ -298,22 +314,22 @@ class PageDetail extends ConsumerWidget {
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          fixedSize: Size.fromHeight(60),
+                          fixedSize: const Size.fromHeight(60),
                           backgroundColor: Colors.amber[300],
                         ),
                         onPressed: () async {
                           if (productInfo != null) {
                             // 商品情報をSQLiteデータベースに保存
                             await insertProduct({
-                              'barcode': codeValue,
-                              'brandName': brandName,
-                              'productName': productName,
-                              'countryName': countryName,
-                              'quantity': quantity,
-                              'imageUrl': imageUrl,
+                              'barcode': _codeValue,
+                              'brandName': _brandName,
+                              'productName': _productName,
+                              'countryName': _countryName,
+                              'quantity': _quantity,
+                              'imageUrl': _imageUrl,
                             });
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
+                              const SnackBar(
                                 content: Text('商品情報を保存しました'),
                               ),
                             );
@@ -324,41 +340,33 @@ class PageDetail extends ConsumerWidget {
                               products;
                           ref.read(Provider_progress.notifier).state = false;
                         },
-                        child: Text(
+                        child: const Text(
                           '保　存',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 26,
                           ),
-                          // style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          fixedSize: Size.fromHeight(60),
+                          fixedSize: const Size.fromHeight(60),
                           backgroundColor: Colors.pink[200],
                         ),
                         onPressed: () {
                           ref.read(Provider_Barcode_Info.notifier).state = null;
                           ref.read(Provider_Product_Info.notifier).state = null;
-                          Navigator.pushReplacementNamed(context, '/')
-                              .then((_) {
-                            ref.read(Provider_Barcode_Info.notifier).state =
-                                null;
-                            ref.read(Provider_Product_Info.notifier).state =
-                                null;
-                          });
+                          Navigator.pushReplacementNamed(context, '/');
                         },
-                        child: Text(
+                        child: const Text(
                           'ホーム',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 26,
                           ),
-                          // style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
                       ),
                     ),
