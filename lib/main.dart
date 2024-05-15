@@ -7,6 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'page_camera.dart';
 import 'page_detail.dart';
 
+// initializeフラグを操作するために商品詳細画面をグローバル化
+final pageDetail = PageDetail();
+
 void main() {
   // ライセンス
   LicenseRegistry.addLicense(() async* {
@@ -21,8 +24,6 @@ void main() {
   // 画面表示時、重くないように各画面を最初に生成しておく
   final home = Home();
   final pageCamera = PageCamera();
-  final pageDetail = PageDetail();
-  // final
   // アプリ
   final app = MaterialApp(
     // home: home,
