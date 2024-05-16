@@ -43,16 +43,25 @@ class PageCamera extends ConsumerWidget {
             Container(
               padding: EdgeInsets.all(8),
               alignment: Alignment.center,
-              child: const Text(
-                '読み取り中・・・',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 26,
-                ),
+              child: Column(
+                children: [
+                  Image.asset(
+                    'assets/images/barcode_head.png',
+                    height: 114 * 4 / 5,
+                    width: 138 * 4 / 5,
+                  ),
+                  const Text(
+                    'バーコードをピピッとどうぞ！',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.width * 6 / 5,
+              height: MediaQuery.of(context).size.width * 17 / 18,
               child: MobileScanner(
                 controller: controller,
                 fit: BoxFit.cover,
@@ -106,8 +115,9 @@ class PageCamera extends ConsumerWidget {
               ),
             ),
             // Expanded(child: Container()),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            Container(
+              alignment: Alignment.bottomCenter,
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -122,12 +132,11 @@ class PageCamera extends ConsumerWidget {
                         Navigator.pop(context);
                       },
                       child: const Text(
-                        '戻る',
+                        'もう戻ります･･･',
                         style: TextStyle(color: Colors.black, fontSize: 26),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
                 ],
               ),
             ),

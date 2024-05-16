@@ -132,7 +132,10 @@ class PageDetail extends ConsumerWidget {
                 alignment: Alignment.center,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber[300],
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 4.0),
                   ),
                   onPressed: () async {
                     // ◆バーコードからOpen Food Facts APIで情報を取得する
@@ -152,8 +155,8 @@ class PageDetail extends ConsumerWidget {
                     }
                   },
                   child: const Text(
-                    '情報取得',
-                    style: TextStyle(fontSize: 20),
+                    'ネットから情報とるよ',
+                    style: TextStyle(fontSize: 24),
                   ),
                 ),
               ),
@@ -341,10 +344,10 @@ class PageDetail extends ConsumerWidget {
                           ref.read(Provider_progress.notifier).state = false;
                         },
                         child: const Text(
-                          '保　存',
+                          '保存するよ',
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 26,
+                            fontSize: 24,
                           ),
                         ),
                       ),
@@ -362,10 +365,10 @@ class PageDetail extends ConsumerWidget {
                           Navigator.pushReplacementNamed(context, '/');
                         },
                         child: const Text(
-                          'ホーム',
+                          '一覧に戻る',
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 26,
+                            fontSize: 24,
                           ),
                         ),
                       ),

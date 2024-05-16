@@ -66,7 +66,7 @@ class PageList extends ConsumerWidget {
                     ref.read(Provider_progress.notifier).state = false;
                   },
                   child: const Text(
-                    '更　新',
+                    'リストを取得！',
                     style: TextStyle(
                       fontSize: 24,
                     ),
@@ -215,7 +215,7 @@ class PageList extends ConsumerWidget {
                     Navigator.pushNamed(context, '/page_camera');
                   },
                   child: const Text(
-                    '読み取り開始',
+                    '読み取りGO！',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 26,
