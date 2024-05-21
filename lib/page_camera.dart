@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:barcode_scanner/home.dart';
 import 'package:barcode_scanner/appbar_component_widget.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // 音源を再生します
 Future<void> playSound(String source) async {
@@ -17,9 +18,7 @@ Future<void> playSound(String source) async {
 
 class PageCamera extends ConsumerWidget {
   // AppBar
-  final appBar = AppBarComponentWidget(
-    title: '食品バーコードリーダー',
-  );
+  final appBar = AppBarComponentWidget();
   // カメラがオンしているかどうか
   final bool isStarted = true;
   // ズームの程度。0から1まで。多いほど近い
@@ -31,6 +30,8 @@ class PageCamera extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     // スキャナーの作用を制御するコントローラーのオブジェクト
     MobileScannerController controller = MobileScannerController();
+    // メッセージ管理
+    final l10n = L10n.of(context);
     // バーコード
     // final barcode = ref.watch(Provider_Barcode);
     return Scaffold(
@@ -50,10 +51,10 @@ class PageCamera extends ConsumerWidget {
                     height: 114 * 4 / 5,
                     width: 138 * 4 / 5,
                   ),
-                  const Text(
-                    'バーコードをピピッとどうぞ！',
+                  Text(
+                    l10n.camera_message,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                     ),
                   ),
@@ -107,7 +108,6 @@ class PageCamera extends ConsumerWidget {
                           productInfo;
                     }
                   }
-                  ref.read(Provider_Initialized.notifier).state = false;
 
                   // 結果を表す画面に切り替える
                   Navigator.pushNamed(context, '/page_detail');
@@ -131,9 +131,10 @@ class PageCamera extends ConsumerWidget {
                         controller.stop(); // まずはカメラを止める
                         Navigator.pop(context);
                       },
-                      child: const Text(
-                        'もう戻ります･･･',
-                        style: TextStyle(color: Colors.black, fontSize: 26),
+                      child: Text(
+                        l10n.camera_btnCancel,
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 26),
                       ),
                     ),
                   ),

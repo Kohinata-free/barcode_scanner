@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'appbar_component_widget.dart';
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/main.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PageList extends ConsumerWidget {
   const PageList({super.key});
@@ -14,9 +15,9 @@ class PageList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // AppBar
-    final appBar = AppBarComponentWidget(
-      title: '食品バーコードリーダー',
-    );
+    final appBar = AppBarComponentWidget();
+    // メッセージ管理
+    final l10n = L10n.of(context);
 
     // 商品情報リスト
     final productList = ref.watch(Provider_Products_List);
@@ -37,17 +38,17 @@ class PageList extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 alignment: Alignment.center,
-                child: const Text(
-                  '商品リスト',
+                child: Text(
+                  l10n.itemList_title,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 26,
                   ),
                 ),
               ),
 
               // ■並び替えラジオボタン
-              const Text('並び替えボタンを置くよ'),
+              // const Text('並び替えボタンを置くよ'),
 
               // ■商品リスト
               Container(
@@ -65,9 +66,9 @@ class PageList extends ConsumerWidget {
                     ref.read(Provider_Products_List.notifier).state = products;
                     ref.read(Provider_progress.notifier).state = false;
                   },
-                  child: const Text(
-                    'リストを取得！',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.itemList_btnUpdate,
+                    style: const TextStyle(
                       fontSize: 24,
                     ),
                   ),
@@ -119,19 +120,18 @@ class PageList extends ConsumerWidget {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Text('Confirm'),
-                                content: const Text(
-                                    'Are you want to delete this item?'),
+                                title: Text(l10n.itemList_delete_title),
+                                content: Text(l10n.itemList_delete_message),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    child: const Text('CANCEL'),
+                                        Navigator.of(context).pop(true),
+                                    child: Text(l10n.itemList_delete_btnYes),
                                   ),
                                   TextButton(
                                     onPressed: () =>
-                                        Navigator.of(context).pop(true),
-                                    child: const Text('DELETE'),
+                                        Navigator.of(context).pop(false),
+                                    child: Text(l10n.itemList_delete_btnNo),
                                   ),
                                 ],
                               );
@@ -176,9 +176,6 @@ class PageList extends ConsumerWidget {
                                   ref
                                       .read(Provider_Product_Info.notifier)
                                       .state = productInfo;
-                                  ref
-                                      .read(Provider_Initialized.notifier)
-                                      .state = false;
 
                                   pageDetail.initialized = false;
                                   Navigator.pushNamed(context, '/page_detail');
@@ -203,10 +200,10 @@ class PageList extends ConsumerWidget {
                 margin: const EdgeInsets.all(8),
                 child: ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
+                    backgroundColor: WidgetStateProperty.all<Color>(
                       const Color.fromARGB(255, 244, 143, 177),
                     ),
-                    minimumSize: MaterialStateProperty.all(
+                    minimumSize: WidgetStateProperty.all(
                         const Size(double.infinity, 60.0)),
                   ),
                   onPressed: () {
@@ -214,9 +211,9 @@ class PageList extends ConsumerWidget {
 
                     Navigator.pushNamed(context, '/page_camera');
                   },
-                  child: const Text(
-                    '読み取りGO！',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.itemList_btnReadBarCode,
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 26,
                     ),

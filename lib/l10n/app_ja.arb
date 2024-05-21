@@ -1,0 +1,15 @@
+{
+  "title_app": "食品バーコード管理",
+  "itemList_title": "商品リスト",
+  "itemList_btnUpdate": "更　新",
+  "itemList_btnReadBarCode": "バーコード読取",
+  "itemList_delete_title": "確認",
+  "itemList_delete_message": "削除してよろしいですか？",
+  "itemList_delete_btnYes": "はい",
+  "itemList_delete_btnNo": "いいえ",
+  "camera_message": "バーコードをピピッとどうぞ！",
+  "camera_btnCancel": "商品一覧へ戻る",
+  "itemDetail_getInfo": "情報取得",
+  "itemDetail_btnSave": "保　存",
+  "itemDetail_btnReturn": "一覧に戻る"
+}
