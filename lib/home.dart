@@ -24,11 +24,6 @@ final Provider_progress = StateProvider((ref) {
   return false;
 });
 
-// 初期化フラグ
-final Provider_Initialized = StateProvider((ref) {
-  return false;
-});
-
 class Home extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:barcode_scanner/appbar_component_widget.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<Map<String, dynamic>?> fetchProductInfo(String barcode) async {
   final String apiUrl =
@@ -31,9 +32,7 @@ class PageDetail extends ConsumerWidget {
   PageDetail({super.key});
 
   // AppBar
-  final appBar = AppBarComponentWidget(
-    title: '食品バーコードリーダー',
-  );
+  final appBar = AppBarComponentWidget();
 
   // 初期化:TextEditingControllerのTextに随時値を設定すると、カーソルが先頭に移ってしまう為、更新したい場合のみ設定するためのフラグを用意し、他画面からもフラグを設定できるようにする
   bool initialized = false;
@@ -57,6 +56,8 @@ class PageDetail extends ConsumerWidget {
     final scandata = ref.watch(Provider_Barcode_Info);
     // 商品情報
     final productInfo = ref.watch(Provider_Product_Info);
+    // メッセージ管理
+    final l10n = L10n.of(context);
 
     String _codeValue = scandata != null
         ? scandata.barcodes.first.rawValue
@@ -154,9 +155,9 @@ class PageDetail extends ConsumerWidget {
                       initialized = false;
                     }
                   },
-                  child: const Text(
-                    'ネットから情報とるよ',
-                    style: TextStyle(fontSize: 24),
+                  child: Text(
+                    l10n.itemDetail_getInfo,
+                    style: const TextStyle(fontSize: 24),
                   ),
                 ),
               ),
@@ -343,9 +344,9 @@ class PageDetail extends ConsumerWidget {
                               products;
                           ref.read(Provider_progress.notifier).state = false;
                         },
-                        child: const Text(
-                          '保存するよ',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.itemDetail_btnSave,
+                          style: const TextStyle(
                             color: Colors.black,
                             fontSize: 24,
                           ),
@@ -364,9 +365,9 @@ class PageDetail extends ConsumerWidget {
                           ref.read(Provider_Product_Info.notifier).state = null;
                           Navigator.pushReplacementNamed(context, '/');
                         },
-                        child: const Text(
-                          '一覧に戻る',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.itemDetail_btnReturn,
+                          style: const TextStyle(
                             color: Colors.black,
                             fontSize: 24,
                           ),
