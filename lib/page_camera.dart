@@ -83,9 +83,12 @@ class PageCamera extends ConsumerWidget {
                       'product': {
                         'code': product['barcode'],
                         'product_name': product['productName'],
+                        'maker': product['makerName'],
                         'brands': product['brandName'],
                         'countries': product['countryName'],
                         'quantity': product['quantity'],
+                        'store': product['storeName'],
+                        'comment': product['comment'],
                         'image_url': product['imageUrl'],
                       },
                     };
@@ -124,7 +127,7 @@ class PageCamera extends ConsumerWidget {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        fixedSize: const Size.fromHeight(60),
+                        fixedSize: const Size.fromHeight(55),
                         backgroundColor: Colors.green[200],
                       ),
                       onPressed: () {
@@ -134,7 +137,7 @@ class PageCamera extends ConsumerWidget {
                       child: Text(
                         l10n.camera_btnCancel,
                         style:
-                            const TextStyle(color: Colors.black, fontSize: 26),
+                            const TextStyle(color: Colors.black, fontSize: 24),
                       ),
                     ),
                   ),

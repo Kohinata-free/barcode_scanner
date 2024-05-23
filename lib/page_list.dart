@@ -36,14 +36,15 @@ class PageList extends ConsumerWidget {
             children: <Widget>[
               // タイトル
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(4),
                 alignment: Alignment.center,
                 child: Text(
                   l10n.itemList_title,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 26,
-                  ),
+                  // style: const TextStyle(
+                  //   fontSize: 26,
+                  // ),
+                  style: TextStyle(fontSize: 24, color: Colors.blue[800]),
                 ),
               ),
 
@@ -52,7 +53,7 @@ class PageList extends ConsumerWidget {
 
               // ■商品リスト
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(2),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
@@ -69,7 +70,7 @@ class PageList extends ConsumerWidget {
                   child: Text(
                     l10n.itemList_btnUpdate,
                     style: const TextStyle(
-                      fontSize: 24,
+                      fontSize: 20,
                     ),
                   ),
                 ),
@@ -82,11 +83,15 @@ class PageList extends ConsumerWidget {
                     if (productList != null && index < productList.length) {
                       String subtext = productList[index]['barcode'] +
                           '/' +
-                          productList[index]['brandName'] +
+                          productList[index]['makerName'] +
                           '/' +
+                          // productList[index]['brandName'] +
+                          // '/' +
                           productList[index]['countryName'] +
                           '/' +
-                          productList[index]['quantity'];
+                          productList[index]['quantity'] +
+                          '/' +
+                          productList[index]['storeName'];
                       return Dismissible(
                         key: UniqueKey(),
                         background: Container(
@@ -141,6 +146,8 @@ class PageList extends ConsumerWidget {
                         child: Card(
                           color: Colors.blue[100],
                           child: ListTile(
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 8.0),
                             title: Text(
                               productList[index]['productName'] ?? '',
                               style: const TextStyle(fontSize: 20),
@@ -151,7 +158,7 @@ class PageList extends ConsumerWidget {
                                   fontSize: 16, color: Colors.grey[700]),
                             ),
                             trailing: Container(
-                              width: 20,
+                              width: 40,
                               alignment: Alignment.centerRight,
                               child: IconButton(
                                 color: Colors.black,
@@ -164,11 +171,15 @@ class PageList extends ConsumerWidget {
                                       'code': productList[index]['barcode'],
                                       'product_name': productList[index]
                                           ['productName'],
+                                      'maker': productList[index]['makerName'],
                                       'brands': productList[index]['brandName'],
                                       'countries': productList[index]
                                           ['countryName'],
                                       'quantity': productList[index]
                                           ['quantity'],
+                                      'storeName': productList[index]
+                                          ['storeName'],
+                                      'comment': productList[index]['comment'],
                                       'image_url': productList[index]
                                           ['imageUrl'],
                                     },
@@ -204,7 +215,7 @@ class PageList extends ConsumerWidget {
                       const Color.fromARGB(255, 244, 143, 177),
                     ),
                     minimumSize: WidgetStateProperty.all(
-                        const Size(double.infinity, 60.0)),
+                        const Size(double.infinity, 55.0)),
                   ),
                   onPressed: () {
                     pageDetail.initialized = false;
@@ -215,7 +226,7 @@ class PageList extends ConsumerWidget {
                     l10n.itemList_btnReadBarCode,
                     style: const TextStyle(
                       color: Colors.black,
-                      fontSize: 26,
+                      fontSize: 24,
                     ),
                   ),
                 ),

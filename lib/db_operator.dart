@@ -6,13 +6,16 @@ const String db_name = 'products_database.db';
 
 // SQLiteデータベースの初期化
 Future<Database> initDatabase() async {
+  // DB削除
+  // await deleteDatabase(db_name);
+
   return await openDatabase(
     // join(await getDatabasesPath(), db_name),
     db_name,
     version: 1,
     onCreate: (db, version) async {
       return await db.execute(
-        "CREATE TABLE IF NOT EXISTS products(barcode TEXT PRIMARY KEY, brandName TEXT, productName TEXT, countryName TEXT, quantity TEXT, imageUrl TEXT)",
+        "CREATE TABLE IF NOT EXISTS products(barcode TEXT PRIMARY KEY,  productName TEXT, makerName TEXT, brandName TEXT, countryName TEXT, quantity TEXT, storeName TEXT, comment TEXT, imageUrl TEXT)",
       );
     },
   );
