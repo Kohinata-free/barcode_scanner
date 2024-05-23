@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:barcode_scanner/appbar_component_widget.dart';
 import 'dart:convert';
@@ -38,17 +39,23 @@ class PageDetail extends ConsumerWidget {
   bool initialized = false;
   String codeValue = '-----';
   // TextEditingControllerのTextに設定する変数
-  String _brandName = '未登録';
   String _productName = '未登録';
+  String _makerName = '未登録';
+  String _brandName = '未登録';
   String _countryName = '未登録';
   String _imageUrl = '';
   String _quantity = '未登録';
+  String _storeName = '未登録';
+  String _comment = '未登録';
 
   // TextEditingController:TextFieldに初期値を与えるために使用
-  late TextEditingController _brandNameController;
   late TextEditingController _productNameController;
+  late TextEditingController _makerNameController;
+  late TextEditingController _brandNameController;
   late TextEditingController _countryNameController;
   late TextEditingController _quantityController;
+  late TextEditingController _storeNameController;
+  late TextEditingController _commentController;
 
   @override
   Widget build(BuildContext context, ref) {
@@ -70,6 +77,8 @@ class PageDetail extends ConsumerWidget {
           : productInfo?['product']['code'] ?? '-----';
       _brandName = productInfo?['product']?['brands'] ?? '未登録';
       _brandNameController = TextEditingController(text: _brandName);
+      _makerName = productInfo?['product']?['maker'] ?? '未登録';
+      _makerNameController = TextEditingController(text: _makerName);
       _productName = productInfo?['product']?['product_name'] ?? '未登録';
       _productNameController = TextEditingController(text: _productName);
       _countryName = productInfo?['product']?['countries'] ?? '未登録';
@@ -77,6 +86,10 @@ class PageDetail extends ConsumerWidget {
       _imageUrl = productInfo?['product']?['image_url'] ?? '';
       _quantity = productInfo?['product']?['quantity'] ?? '未登録';
       _quantityController = TextEditingController(text: _quantity);
+      _storeName = productInfo?['product']?['storeName'] ?? '未登録';
+      _storeNameController = TextEditingController(text: _storeName);
+      _comment = productInfo?['product']?['comment'] ?? '未登録';
+      _commentController = TextEditingController(text: _comment);
       initialized = true;
     }
 
@@ -94,21 +107,58 @@ class PageDetail extends ConsumerWidget {
               Container(
                 alignment: Alignment.center,
                 child: Text(
-                  '＜バーコード情報＞',
+                  '＜食品情報＞',
                   style: TextStyle(fontSize: 24, color: Colors.blue[800]),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 8, left: 50),
-                child: Text(
-                  '[コード値] ${_codeValue}',
-                  style: TextStyle(fontSize: 18),
+                padding: const EdgeInsets.only(top: 0, left: 20),
+                child: Row(
+                  children: [
+                    Text(
+                      '[バーコード値] ${_codeValue}',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    SizedBox(width: 8),
+                    Align(
+                      alignment: Alignment.center,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 4.0),
+                        ),
+                        onPressed: () async {
+                          // ◆バーコードからOpen Food Facts APIで情報を取得する
+                          final Map<String, dynamic>? productInfo =
+                              await fetchProductInfo('${_codeValue}');
+
+                          if (productInfo != null) {
+                            // 商品名を取得
+                            final String productName =
+                                productInfo['product']['product_name'];
+                            print('製品名=$productName');
+
+                            // ◆続きはここから
+                            ref.read(Provider_Product_Info.notifier).state =
+                                productInfo;
+                            initialized = false;
+                          }
+                        },
+                        child: Text(
+                          l10n.itemDetail_getInfo,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Container(
                 margin: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 10,
+                  vertical: 8,
+                  horizontal: 8,
                 ),
                 height: 1,
                 decoration: const BoxDecoration(
@@ -121,80 +171,48 @@ class PageDetail extends ConsumerWidget {
                   ),
                 ),
               ),
-              Container(
-                padding: EdgeInsets.only(bottom: 8),
-                alignment: Alignment.center,
-                child: Text(
-                  '＜ーー食品情報ーー＞',
-                  style: TextStyle(fontSize: 24, color: Colors.blue[800]),
-                ),
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 4.0),
-                  ),
-                  onPressed: () async {
-                    // ◆バーコードからOpen Food Facts APIで情報を取得する
-                    final Map<String, dynamic>? productInfo =
-                        await fetchProductInfo('${_codeValue}');
+              // Container(
+              //   padding: EdgeInsets.only(bottom: 8),
+              //   alignment: Alignment.center,
+              //   child: Text(
+              //     '＜ーー食品情報ーー＞',
+              //     style: TextStyle(fontSize: 24, color: Colors.blue[800]),
+              //   ),
+              // ),
+              // Align(
+              //   alignment: Alignment.center,
+              //   child: ElevatedButton(
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: Colors.blue,
+              //       foregroundColor: Colors.white,
+              //       padding: const EdgeInsets.symmetric(
+              //           horizontal: 16, vertical: 4.0),
+              //     ),
+              //     onPressed: () async {
+              //       // ◆バーコードからOpen Food Facts APIで情報を取得する
+              //       final Map<String, dynamic>? productInfo =
+              //           await fetchProductInfo('${_codeValue}');
 
-                    if (productInfo != null) {
-                      // 商品名を取得
-                      final String productName =
-                          productInfo['product']['product_name'];
-                      print('製品名=$productName');
+              //       if (productInfo != null) {
+              //         // 商品名を取得
+              //         final String productName =
+              //             productInfo['product']['product_name'];
+              //         print('製品名=$productName');
 
-                      // ◆続きはここから
-                      ref.read(Provider_Product_Info.notifier).state =
-                          productInfo;
-                      initialized = false;
-                    }
-                  },
-                  child: Text(
-                    l10n.itemDetail_getInfo,
-                    style: const TextStyle(fontSize: 24),
-                  ),
-                ),
-              ),
+              //         // ◆続きはここから
+              //         ref.read(Provider_Product_Info.notifier).state =
+              //             productInfo;
+              //         initialized = false;
+              //       }
+              //     },
+              //     child: Text(
+              //       l10n.itemDetail_getInfo,
+              //       style: const TextStyle(fontSize: 20),
+              //     ),
+              //   ),
+              // ),
               Padding(
-                padding: const EdgeInsets.only(top: 0, left: 50, right: 8),
-                child: Row(
-                  children: [
-                    const Text(
-                      '[ブランド名] ',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    Expanded(
-                      child: TextField(
-                        style: const TextStyle(
-                          fontSize: 18,
-                        ),
-                        controller: _brandNameController,
-                        onChanged: (newBrandName) {
-                          _brandName = newBrandName;
-                          productInfo?['product']?['brands'] = newBrandName;
-                        },
-                        decoration: const InputDecoration(
-                          contentPadding:
-                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red, // フォーカス時のアンダーラインの色を設定
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 0, left: 50, right: 8),
+                padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
                 child: Row(
                   children: [
                     const Text(
@@ -212,7 +230,12 @@ class PageDetail extends ConsumerWidget {
                           productInfo?['product']?['product_name'] =
                               newProductName;
                         },
+                        inputFormatters: [
+                          // 最大10文字まで
+                          LengthLimitingTextInputFormatter(10),
+                        ],
                         decoration: const InputDecoration(
+                          isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
                           focusedBorder: UnderlineInputBorder(
@@ -227,7 +250,77 @@ class PageDetail extends ConsumerWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 8, left: 50, right: 8),
+                padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
+                child: Row(
+                  children: [
+                    const Text(
+                      '[メーカー] ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                        controller: _makerNameController,
+                        onChanged: (newMakerName) {
+                          _makerName = newMakerName;
+                          productInfo?['product']?['maker'] = newMakerName;
+                        },
+                        inputFormatters: [
+                          // 最大10文字まで
+                          LengthLimitingTextInputFormatter(10),
+                        ],
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          contentPadding:
+                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.red, // フォーカス時のアンダーラインの色を設定
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
+              //   child: Row(
+              //     children: [
+              //       const Text(
+              //         '[ブランド] ',
+              //         style: TextStyle(fontSize: 18),
+              //       ),
+              //       Expanded(
+              //         child: TextField(
+              //           style: const TextStyle(
+              //             fontSize: 18,
+              //           ),
+              //           controller: _brandNameController,
+              //           onChanged: (newBrandName) {
+              //             _brandName = newBrandName;
+              //             productInfo?['product']?['brands'] = newBrandName;
+              //           },
+              //           decoration: const InputDecoration(
+              //             isDense: true,
+              //             contentPadding:
+              //                 EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+              //             focusedBorder: UnderlineInputBorder(
+              //               borderSide: BorderSide(
+              //                 color: Colors.red, // フォーカス時のアンダーラインの色を設定
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
                 child: Row(
                   children: [
                     const Text(
@@ -245,7 +338,12 @@ class PageDetail extends ConsumerWidget {
                           productInfo?['product']?['countries'] =
                               newCountryName;
                         },
+                        inputFormatters: [
+                          // 最大10文字まで
+                          LengthLimitingTextInputFormatter(10),
+                        ],
                         decoration: const InputDecoration(
+                          isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
                           focusedBorder: UnderlineInputBorder(
@@ -260,7 +358,7 @@ class PageDetail extends ConsumerWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 8, left: 50, right: 8),
+                padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
                 child: Row(
                   children: [
                     const Text(
@@ -277,7 +375,12 @@ class PageDetail extends ConsumerWidget {
                           _quantity = newQuantity;
                           productInfo?['product']?['quantity'] = newQuantity;
                         },
+                        inputFormatters: [
+                          // 最大10文字まで
+                          LengthLimitingTextInputFormatter(10),
+                        ],
                         decoration: const InputDecoration(
+                          isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
                           focusedBorder: UnderlineInputBorder(
@@ -285,6 +388,90 @@ class PageDetail extends ConsumerWidget {
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
                           ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
+                child: Row(
+                  children: [
+                    const Text(
+                      '[お店] ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                        controller: _storeNameController,
+                        onChanged: (newStoreName) {
+                          _storeName = newStoreName;
+                          productInfo?['product']?['storeName'] = newStoreName;
+                        },
+                        inputFormatters: [
+                          // 最大10文字まで
+                          LengthLimitingTextInputFormatter(10),
+                        ],
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          contentPadding:
+                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.red, // フォーカス時のアンダーラインの色を設定
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
+                child: const Text(
+                  '[コメント] ',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 0, left: 20, right: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                        controller: _commentController,
+                        maxLines: 3,
+                        inputFormatters: [
+                          // 最大200文字まで
+                          LengthLimitingTextInputFormatter(50),
+                        ],
+                        onChanged: (newComment) {
+                          _comment = newComment;
+                          productInfo?['product']?['comment'] = newComment;
+                        },
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.all(4.0), // テキスト下部の余白を調整
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.red, // フォーカス時のアンダーラインの色を設定
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
                         ),
                       ),
                     ),
@@ -311,14 +498,14 @@ class PageDetail extends ConsumerWidget {
               ),
               // Expanded(child: Container()),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(4.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          fixedSize: const Size.fromHeight(60),
+                          fixedSize: const Size.fromHeight(55),
                           backgroundColor: Colors.amber[300],
                         ),
                         onPressed: () async {
@@ -326,10 +513,13 @@ class PageDetail extends ConsumerWidget {
                             // 商品情報をSQLiteデータベースに保存
                             await insertProduct({
                               'barcode': _codeValue,
-                              'brandName': _brandName,
                               'productName': _productName,
+                              'makerName': _makerName,
+                              'brandName': _brandName,
                               'countryName': _countryName,
                               'quantity': _quantity,
+                              'storeName': _storeName,
+                              'comment': _comment,
                               'imageUrl': _imageUrl,
                             });
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -357,7 +547,7 @@ class PageDetail extends ConsumerWidget {
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          fixedSize: const Size.fromHeight(60),
+                          fixedSize: const Size.fromHeight(55),
                           backgroundColor: Colors.pink[200],
                         ),
                         onPressed: () {
