@@ -104,7 +104,9 @@ class PageList extends ConsumerWidget {
                           '/' +
                           productList[index]['quantity'] +
                           '/' +
-                          productList[index]['storeName'];
+                          productList[index]['storeName'] +
+                          '/' +
+                          productList[index]['comment'];
                       return Dismissible(
                         key: UniqueKey(),
                         background: Container(

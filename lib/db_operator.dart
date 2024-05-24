@@ -14,21 +14,50 @@ Future<Database> initDatabase() async {
     db_name,
     version: 1,
     onCreate: (db, version) async {
-      return await db.execute(
+      await db.execute(
         "CREATE TABLE IF NOT EXISTS products(barcode TEXT PRIMARY KEY,  productName TEXT, makerName TEXT, brandName TEXT, countryName TEXT, quantity TEXT, storeName TEXT, comment TEXT, imageUrl TEXT)",
+      );
+
+      // トリガーの作成
+      await db.execute(
+        "CREATE TRIGGER IF NOT EXISTS limit_products_count "
+        "BEFORE INSERT ON products "
+        "WHEN (SELECT COUNT(*) FROM products) >= 100 "
+        "BEGIN "
+        "  SELECT RAISE(ABORT, 'Cannot insert more than 100 products'); "
+        "END;",
       );
     },
   );
 }
 
 // 商品情報をSQLiteデータベースに保存する
-Future<void> insertProduct(Map<String, dynamic> productInfo) async {
+Future<bool> insertProduct(Map<String, dynamic> productInfo) async {
   final Database db = await initDatabase();
-  await db.insert(
-    'products',
-    productInfo,
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );
+
+  // 100件を超えていないかをチェックするクエリを実行
+  final countResult =
+      await db.rawQuery('SELECT COUNT(*) as count FROM products');
+  final count = Sqflite.firstIntValue(countResult);
+
+  // barcodeが存在するかチェック
+  final existingProduct = await db.query('products',
+      where: 'barcode = ?', whereArgs: [productInfo['barcode']]);
+
+  if (existingProduct.isNotEmpty) {
+    await db.update('products', productInfo,
+        where: 'barcode = ?', whereArgs: [productInfo['barcode']]);
+  } else if (count! < 100) {
+    await db.insert(
+      'products',
+      productInfo,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  } else {
+    return false;
+  }
+
+  return true;
 }
 
 // 商品情報をSQLiteデータベースから取得する

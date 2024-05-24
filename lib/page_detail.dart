@@ -231,8 +231,8 @@ class PageDetail extends ConsumerWidget {
                               newProductName;
                         },
                         inputFormatters: [
-                          // 最大10文字まで
-                          LengthLimitingTextInputFormatter(10),
+                          // 最大15文字まで
+                          LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
                           isDense: true,
@@ -268,8 +268,8 @@ class PageDetail extends ConsumerWidget {
                           productInfo?['product']?['maker'] = newMakerName;
                         },
                         inputFormatters: [
-                          // 最大10文字まで
-                          LengthLimitingTextInputFormatter(10),
+                          // 最大15文字まで
+                          LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
                           isDense: true,
@@ -339,8 +339,8 @@ class PageDetail extends ConsumerWidget {
                               newCountryName;
                         },
                         inputFormatters: [
-                          // 最大10文字まで
-                          LengthLimitingTextInputFormatter(10),
+                          // 最大15文字まで
+                          LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
                           isDense: true,
@@ -376,8 +376,8 @@ class PageDetail extends ConsumerWidget {
                           productInfo?['product']?['quantity'] = newQuantity;
                         },
                         inputFormatters: [
-                          // 最大10文字まで
-                          LengthLimitingTextInputFormatter(10),
+                          // 最大15文字まで
+                          LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
                           isDense: true,
@@ -413,8 +413,8 @@ class PageDetail extends ConsumerWidget {
                           productInfo?['product']?['storeName'] = newStoreName;
                         },
                         inputFormatters: [
-                          // 最大10文字まで
-                          LengthLimitingTextInputFormatter(10),
+                          // 最大15文字まで
+                          LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
                           isDense: true,
@@ -513,30 +513,47 @@ class PageDetail extends ConsumerWidget {
                           backgroundColor: Colors.amber[300],
                         ),
                         onPressed: () async {
-                          // if (productInfo != null) {
-                          // 商品情報をSQLiteデータベースに保存
-                          await insertProduct({
-                            'barcode': _codeValue,
-                            'productName': _productName,
-                            'makerName': _makerName,
-                            'brandName': _brandName,
-                            'countryName': _countryName,
-                            'quantity': _quantity,
-                            'storeName': _storeName,
-                            'comment': _comment,
-                            'imageUrl': _imageUrl,
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('商品情報を保存しました'),
-                            ),
-                          );
-                          // }
-                          ref.read(Provider_progress.notifier).state = true;
-                          var products = await retrieveProducts();
-                          ref.read(Provider_Products_List.notifier).state =
-                              products;
-                          ref.read(Provider_progress.notifier).state = false;
+                          try {
+                            // if (productInfo != null) {
+                            // 商品情報をSQLiteデータベースに保存
+                            bool result = await insertProduct({
+                              'barcode': _codeValue,
+                              'productName': _productName,
+                              'makerName': _makerName,
+                              'brandName': _brandName,
+                              'countryName': _countryName,
+                              'quantity': _quantity,
+                              'storeName': _storeName,
+                              'comment': _comment,
+                              'imageUrl': _imageUrl,
+                            });
+                            if (result) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('商品情報を保存しました'),
+                                ),
+                              );
+                              // }
+                              ref.read(Provider_progress.notifier).state = true;
+                              var products = await retrieveProducts();
+                              ref.read(Provider_Products_List.notifier).state =
+                                  products;
+                              ref.read(Provider_progress.notifier).state =
+                                  false;
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('商品情報の保存は100件まです'),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('商品情報の保存に失敗しました'),
+                              ),
+                            );
+                          }
                         },
                         child: Text(
                           l10n.itemDetail_btnSave,
