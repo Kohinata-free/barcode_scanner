@@ -7,15 +7,23 @@ import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/main.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+// ignore: must_be_immutable
 class PageList extends ConsumerWidget {
-  const PageList({super.key});
+  PageList({super.key});
 
+  // AppBar
+  final appBar = AppBarComponentWidget();
+  bool _initialized = false;
   // ◆初期化処理をしたい
+  Future initialize(WidgetRef ref) async {
+    // ref.read(Provider_progress.notifier).state = true;
+    var products = await retrieveProducts();
+    ref.read(Provider_Products_List.notifier).state = products;
+    ref.read(Provider_progress.notifier).state = false;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // AppBar
-    final appBar = AppBarComponentWidget();
     // メッセージ管理
     final l10n = L10n.of(context);
 
@@ -25,6 +33,10 @@ class PageList extends ConsumerWidget {
     // 進捗
     final progress = ref.watch(Provider_progress);
 
+    if (_initialized == false) {
+      initialize(ref);
+      _initialized = true;
+    }
     return Scaffold(
       backgroundColor: Colors.pink[50],
       appBar: appBar,
@@ -77,6 +89,7 @@ class PageList extends ConsumerWidget {
               ),
 
               Flexible(
+                // Expanded(
                 child: ListView.builder(
                   itemCount: productList?.length ?? 0,
                   itemBuilder: (context, index) {
@@ -204,7 +217,7 @@ class PageList extends ConsumerWidget {
               ),
 
               // 余白
-              Expanded(child: Container()),
+              // Expanded(child: Container()),
 
               // 読み取り開始ボタン
               Container(
