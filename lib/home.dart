@@ -24,6 +24,11 @@ final Provider_progress = StateProvider((ref) {
   return false;
 });
 
+// 2スキャン一致バーコード値
+final Provider_barcode = StateProvider<String?>((ref) {
+  return null;
+});
+
 class Home extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -51,7 +51,7 @@ class PageDetail extends ConsumerWidget {
   // TextEditingController:TextFieldに初期値を与えるために使用
   late TextEditingController _productNameController;
   late TextEditingController _makerNameController;
-  late TextEditingController _brandNameController;
+  // late TextEditingController _brandNameController;
   late TextEditingController _countryNameController;
   late TextEditingController _quantityController;
   late TextEditingController _storeNameController;
@@ -76,7 +76,7 @@ class PageDetail extends ConsumerWidget {
           ? scandata.barcodes.first.rawValue
           : productInfo?['product']['code'] ?? '-----';
       _brandName = productInfo?['product']?['brands'] ?? '未登録';
-      _brandNameController = TextEditingController(text: _brandName);
+      // _brandNameController = TextEditingController(text: _brandName);
       _makerName = productInfo?['product']?['maker'] ?? '未登録';
       _makerNameController = TextEditingController(text: _makerName);
       _productName = productInfo?['product']?['product_name'] ?? '未登録';
@@ -119,7 +119,7 @@ class PageDetail extends ConsumerWidget {
                       '[バーコード値] ${_codeValue}',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Align(
                       alignment: Alignment.center,
                       child: ElevatedButton(
@@ -431,9 +431,9 @@ class PageDetail extends ConsumerWidget {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
-                child: const Text(
+              const Padding(
+                padding: EdgeInsets.only(top: 8, left: 20, right: 8),
+                child: Text(
                   '[コメント] ',
                   style: TextStyle(fontSize: 18),
                 ),
@@ -471,7 +471,7 @@ class PageDetail extends ConsumerWidget {
                             ),
                           ),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: Color.fromARGB(255, 180, 230, 250),
                         ),
                       ),
                     ),
@@ -490,9 +490,13 @@ class PageDetail extends ConsumerWidget {
                           height: 130, // adjust the height as needed
                           fit: BoxFit.cover, // adjust the fit as needed
                         )
-                      : const Text(
-                          'No Image',
-                          style: TextStyle(fontSize: 18),
+                      : Container(
+                          height: 132,
+                          alignment: Alignment.center,
+                          child: const Text(
+                            'No Image',
+                            style: TextStyle(fontSize: 18),
+                          ),
                         ),
                 ),
               ),
@@ -509,25 +513,25 @@ class PageDetail extends ConsumerWidget {
                           backgroundColor: Colors.amber[300],
                         ),
                         onPressed: () async {
-                          if (productInfo != null) {
-                            // 商品情報をSQLiteデータベースに保存
-                            await insertProduct({
-                              'barcode': _codeValue,
-                              'productName': _productName,
-                              'makerName': _makerName,
-                              'brandName': _brandName,
-                              'countryName': _countryName,
-                              'quantity': _quantity,
-                              'storeName': _storeName,
-                              'comment': _comment,
-                              'imageUrl': _imageUrl,
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('商品情報を保存しました'),
-                              ),
-                            );
-                          }
+                          // if (productInfo != null) {
+                          // 商品情報をSQLiteデータベースに保存
+                          await insertProduct({
+                            'barcode': _codeValue,
+                            'productName': _productName,
+                            'makerName': _makerName,
+                            'brandName': _brandName,
+                            'countryName': _countryName,
+                            'quantity': _quantity,
+                            'storeName': _storeName,
+                            'comment': _comment,
+                            'imageUrl': _imageUrl,
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('商品情報を保存しました'),
+                            ),
+                          );
+                          // }
                           ref.read(Provider_progress.notifier).state = true;
                           var products = await retrieveProducts();
                           ref.read(Provider_Products_List.notifier).state =
