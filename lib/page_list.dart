@@ -94,19 +94,20 @@ class PageList extends ConsumerWidget {
                   itemCount: productList?.length ?? 0,
                   itemBuilder: (context, index) {
                     if (productList != null && index < productList.length) {
-                      String subtext = productList[index]['barcode'] +
-                          '/' +
-                          productList[index]['makerName'] +
-                          '/' +
-                          // productList[index]['brandName'] +
+                      String subtext =
+                          // productList[index]['barcode'] +
                           // '/' +
-                          productList[index]['countryName'] +
-                          '/' +
-                          productList[index]['quantity'] +
-                          '/' +
-                          productList[index]['storeName'] +
-                          '/' +
-                          productList[index]['comment'];
+                          productList[index]['makerName'] +
+                              '/' +
+                              // productList[index]['brandName'] +
+                              // '/' +
+                              productList[index]['countryName'] +
+                              '/' +
+                              productList[index]['quantity'] +
+                              '/' +
+                              productList[index]['storeName'];
+                      // '/' +
+                      // productList[index]['comment'];
                       return Dismissible(
                         key: UniqueKey(),
                         background: Container(
@@ -163,16 +164,47 @@ class PageList extends ConsumerWidget {
                           child: ListTile(
                             contentPadding:
                                 EdgeInsets.symmetric(horizontal: 8.0),
-                            title: Text(
-                              productList[index]['productName'] ?? '',
-                              style: const TextStyle(fontSize: 20),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      productList[index]['productName'] ?? '',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      // ◆お気に入り数値(0～5)段階で表示するようにする
+                                      '★★★★★',
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          color:
+                                              Color.fromARGB(255, 255, 111, 0)),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  productList[index]['barcode'] ?? '',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ],
                             ),
                             subtitle: Text(
                               subtext,
                               style: TextStyle(
-                                  fontSize: 16, color: Colors.grey[700]),
+                                fontSize: 16,
+                                color: Colors.grey[700],
+                              ),
+                              // overflow: TextOverflow.ellipsis,
                             ),
                             trailing: Container(
+                              padding: EdgeInsets.all(0),
                               width: 40,
                               alignment: Alignment.centerRight,
                               child: IconButton(
