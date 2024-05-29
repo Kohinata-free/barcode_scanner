@@ -29,6 +29,11 @@ final Provider_barcode = StateProvider<String?>((ref) {
   return null;
 });
 
+// 商品詳細画面更新プロバイダー
+final Provider_detail_item_update = StateProvider((ref) {
+  return false;
+});
+
 class Home extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {

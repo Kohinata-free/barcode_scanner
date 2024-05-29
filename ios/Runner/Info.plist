@@ -49,5 +49,7 @@
   <array>
     <string>ja</string>
   </array>
+  <key>NSCameraUsageDescription</key>
+  <string>バーコードの読み取り、および商品画像を撮影する為にカメラを使用します。</string>
 </dict>
 </plist>

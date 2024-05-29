@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/home.dart';
@@ -9,6 +10,7 @@ import 'package:barcode_scanner/appbar_component_widget.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:image_picker/image_picker.dart';
 
 Future<Map<String, dynamic>?> fetchProductInfo(String barcode) async {
   final String apiUrl =
@@ -63,8 +65,13 @@ class PageDetail extends ConsumerWidget {
     final scandata = ref.watch(Provider_Barcode_Info);
     // 商品情報
     final productInfo = ref.watch(Provider_Product_Info);
+    // 更新
+    final update = ref.watch(Provider_detail_item_update);
     // メッセージ管理
     final l10n = L10n.of(context);
+
+    // カメラコントローラ
+    final imagePicker = ImagePicker();
 
     String _codeValue = scandata != null
         ? scandata.barcodes.first.rawValue
@@ -171,46 +178,6 @@ class PageDetail extends ConsumerWidget {
                   ),
                 ),
               ),
-              // Container(
-              //   padding: EdgeInsets.only(bottom: 8),
-              //   alignment: Alignment.center,
-              //   child: Text(
-              //     '＜ーー食品情報ーー＞',
-              //     style: TextStyle(fontSize: 24, color: Colors.blue[800]),
-              //   ),
-              // ),
-              // Align(
-              //   alignment: Alignment.center,
-              //   child: ElevatedButton(
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: Colors.blue,
-              //       foregroundColor: Colors.white,
-              //       padding: const EdgeInsets.symmetric(
-              //           horizontal: 16, vertical: 4.0),
-              //     ),
-              //     onPressed: () async {
-              //       // ◆バーコードからOpen Food Facts APIで情報を取得する
-              //       final Map<String, dynamic>? productInfo =
-              //           await fetchProductInfo('${_codeValue}');
-
-              //       if (productInfo != null) {
-              //         // 商品名を取得
-              //         final String productName =
-              //             productInfo['product']['product_name'];
-              //         print('製品名=$productName');
-
-              //         // ◆続きはここから
-              //         ref.read(Provider_Product_Info.notifier).state =
-              //             productInfo;
-              //         initialized = false;
-              //       }
-              //     },
-              //     child: Text(
-              //       l10n.itemDetail_getInfo,
-              //       style: const TextStyle(fontSize: 20),
-              //     ),
-              //   ),
-              // ),
               Padding(
                 padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
                 child: Row(
@@ -286,39 +253,6 @@ class PageDetail extends ConsumerWidget {
                   ],
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
-              //   child: Row(
-              //     children: [
-              //       const Text(
-              //         '[ブランド] ',
-              //         style: TextStyle(fontSize: 18),
-              //       ),
-              //       Expanded(
-              //         child: TextField(
-              //           style: const TextStyle(
-              //             fontSize: 18,
-              //           ),
-              //           controller: _brandNameController,
-              //           onChanged: (newBrandName) {
-              //             _brandName = newBrandName;
-              //             productInfo?['product']?['brands'] = newBrandName;
-              //           },
-              //           decoration: const InputDecoration(
-              //             isDense: true,
-              //             contentPadding:
-              //                 EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-              //             focusedBorder: UnderlineInputBorder(
-              //               borderSide: BorderSide(
-              //                 color: Colors.red, // フォーカス時のアンダーラインの色を設定
-              //               ),
-              //             ),
-              //           ),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
               Padding(
                 padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
                 child: Row(
@@ -479,28 +413,67 @@ class PageDetail extends ConsumerWidget {
                 ),
               ),
               // ◆URLがある場合のみ画像を表示するよう修正
-              Align(
-                alignment: Alignment.center,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8, bottom: 8),
-                  child: (_imageUrl != '')
-                      ? Image.network(
-                          _imageUrl,
-                          width: 130, // adjust the width as needed
-                          height: 130, // adjust the height as needed
-                          fit: BoxFit.cover, // adjust the fit as needed
-                        )
-                      : Container(
-                          height: 132,
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'No Image',
-                            style: TextStyle(fontSize: 18),
-                          ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8, bottom: 8),
+                      child: (_imageUrl.isNotEmpty)
+                          ? (_imageUrl.startsWith('http')
+                              ? Image.network(
+                                  _imageUrl,
+                                  width: 130, // adjust the width as needed
+                                  height: 130, // adjust the height as needed
+                                  fit: BoxFit.cover, // adjust the fit as needed
+                                )
+                              : Image.file(
+                                  File(_imageUrl),
+                                  width: 130, // adjust the width as needed
+                                  height: 130, // adjust the height as needed
+                                  fit: BoxFit.cover, // adjust the fit as needed
+                                ))
+                          : const Text(
+                              'No Image',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                    ),
+                  ),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final imageFilePath = await imagePicker.pickImage(
+                            source: ImageSource.camera);
+                        if (imageFilePath == null) return;
+
+                        final imagePath = File(imageFilePath.path);
+
+                        _imageUrl = imagePath.path;
+                        productInfo?['product']?['image_url'] = _imageUrl;
+
+                        ref.read(Provider_detail_item_update.notifier).state =
+                            !update;
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4.0,
                         ),
-                ),
+                      ),
+                      child: const Text(
+                        'カメラで撮影',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              // Expanded(child: Container()),
               Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Row(
