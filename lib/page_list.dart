@@ -64,29 +64,29 @@ class PageList extends ConsumerWidget {
               // const Text('並び替えボタンを置くよ'),
 
               // ■商品リスト
-              Container(
-                padding: const EdgeInsets.all(2),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 4.0),
-                  ),
-                  onPressed: () async {
-                    ref.read(Provider_progress.notifier).state = true;
-                    var products = await retrieveProducts();
-                    ref.read(Provider_Products_List.notifier).state = products;
-                    ref.read(Provider_progress.notifier).state = false;
-                  },
-                  child: Text(
-                    l10n.itemList_btnUpdate,
-                    style: const TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-              ),
+              // Container(
+              //   padding: const EdgeInsets.all(2),
+              //   child: ElevatedButton(
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: Colors.blue,
+              //       foregroundColor: Colors.white,
+              //       padding: const EdgeInsets.symmetric(
+              //           horizontal: 16, vertical: 4.0),
+              //     ),
+              //     onPressed: () async {
+              //       ref.read(Provider_progress.notifier).state = true;
+              //       var products = await retrieveProducts();
+              //       ref.read(Provider_Products_List.notifier).state = products;
+              //       ref.read(Provider_progress.notifier).state = false;
+              //     },
+              //     child: Text(
+              //       l10n.itemList_btnUpdate,
+              //       style: const TextStyle(
+              //         fontSize: 20,
+              //       ),
+              //     ),
+              //   ),
+              // ),
 
               Flexible(
                 // Expanded(
@@ -108,6 +108,7 @@ class PageList extends ConsumerWidget {
                               productList[index]['storeName'];
                       // '/' +
                       // productList[index]['comment'];
+
                       return Dismissible(
                         key: UniqueKey(),
                         background: Container(
@@ -163,31 +164,37 @@ class PageList extends ConsumerWidget {
                           color: Colors.blue[100],
                           child: ListTile(
                             contentPadding:
-                                EdgeInsets.symmetric(horizontal: 8.0),
+                                const EdgeInsets.only(left: 8.0, right: 0.0),
                             title: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      productList[index]['productName'] ?? '',
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                Padding(
+                                  padding: const EdgeInsets.all(0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        productList[index]['productName'] ?? '',
+                                        style: const TextStyle(
+                                          fontSize: 19,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      // ◆お気に入り数値(0～5)段階で表示するようにする
-                                      '★★★★★',
-                                      style: const TextStyle(
-                                          fontSize: 18,
+                                      Expanded(
+                                        child: Container(),
+                                      ),
+                                      ...List.generate(5, (i) {
+                                        return Icon(
+                                          Icons.favorite,
+                                          size: 22,
                                           color:
-                                              Color.fromARGB(255, 255, 111, 0)),
-                                    ),
-                                  ],
+                                              i < productList[index]['favorit']
+                                                  ? Colors.pink
+                                                  : Colors.grey,
+                                        );
+                                      }),
+                                    ],
+                                  ),
                                 ),
                                 Text(
                                   productList[index]['barcode'] ?? '',
@@ -208,8 +215,8 @@ class PageList extends ConsumerWidget {
                               width: 40,
                               alignment: Alignment.centerRight,
                               child: IconButton(
-                                color: Colors.black,
-                                icon: const Icon(Icons.arrow_forward_rounded),
+                                color: Colors.blue[900],
+                                icon: const Icon(Icons.arrow_forward_ios),
                                 onPressed: () {
                                   // ◆Riverpodで値を設定する(オブジェクトで持っちゃってるので詳細画面の作りも変える必要がある)
                                   // ◆詳細画面に遷移します
@@ -229,6 +236,7 @@ class PageList extends ConsumerWidget {
                                       'comment': productList[index]['comment'],
                                       'image_url': productList[index]
                                           ['imageUrl'],
+                                      'favorit': productList[index]['favorit'],
                                     },
                                   };
                                   ref

@@ -15,7 +15,7 @@ Future<Database> initDatabase() async {
     version: 1,
     onCreate: (db, version) async {
       await db.execute(
-        "CREATE TABLE IF NOT EXISTS products(barcode TEXT PRIMARY KEY,  productName TEXT, makerName TEXT, brandName TEXT, countryName TEXT, quantity TEXT, storeName TEXT, comment TEXT, imageUrl TEXT)",
+        "CREATE TABLE IF NOT EXISTS products(barcode TEXT PRIMARY KEY,  productName TEXT, makerName TEXT, brandName TEXT, countryName TEXT, quantity TEXT, storeName TEXT, comment TEXT, imageUrl TEXT, favorit INTEGER)",
       );
 
       // トリガーの作成
@@ -27,6 +27,15 @@ Future<Database> initDatabase() async {
         "  SELECT RAISE(ABORT, 'Cannot insert more than 100 products'); "
         "END;",
       );
+    },
+    // バージョン更新時の処理を追加
+    onUpgrade: (db, oldVersion, newVersion) async {
+      //   if (oldVersion < 2) {
+      //     // バージョンが1から2にアップグレードされる場合、countカラムを追加
+      //     await db.execute(
+      //       "ALTER TABLE products ADD COLUMN favorit INTEGER",
+      //     );
+      //   }
     },
   );
 }

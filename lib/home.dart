@@ -34,6 +34,11 @@ final Provider_detail_item_update = StateProvider((ref) {
   return false;
 });
 
+// 商品お気に入り数
+final Provider_item_favorit = StateProvider((ref) {
+  return 1;
+});
+
 class Home extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {

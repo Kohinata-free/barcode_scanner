@@ -47,8 +47,9 @@ class PageDetail extends ConsumerWidget {
   String _countryName = '未登録';
   String _imageUrl = '';
   String _quantity = '未登録';
-  String _storeName = '未登録';
+  String _storeName = '';
   String _comment = '未登録';
+  int _favorit = 1;
 
   // TextEditingController:TextFieldに初期値を与えるために使用
   late TextEditingController _productNameController;
@@ -67,6 +68,7 @@ class PageDetail extends ConsumerWidget {
     final productInfo = ref.watch(Provider_Product_Info);
     // 更新
     final update = ref.watch(Provider_detail_item_update);
+
     // メッセージ管理
     final l10n = L10n.of(context);
 
@@ -93,10 +95,11 @@ class PageDetail extends ConsumerWidget {
       _imageUrl = productInfo?['product']?['image_url'] ?? '';
       _quantity = productInfo?['product']?['quantity'] ?? '未登録';
       _quantityController = TextEditingController(text: _quantity);
-      _storeName = productInfo?['product']?['storeName'] ?? '未登録';
+      _storeName = productInfo?['product']?['storeName'] ?? '';
       _storeNameController = TextEditingController(text: _storeName);
       _comment = productInfo?['product']?['comment'] ?? '未登録';
       _commentController = TextEditingController(text: _comment);
+      _favorit = productInfo?['product']?['favorit'] ?? 1;
       initialized = true;
     }
 
@@ -105,7 +108,7 @@ class PageDetail extends ConsumerWidget {
       appBar: appBar,
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
           width: double.infinity,
           height: MediaQuery.of(context).size.height,
           child: Column(
@@ -114,7 +117,7 @@ class PageDetail extends ConsumerWidget {
               Container(
                 alignment: Alignment.center,
                 child: Text(
-                  '＜食品情報＞',
+                  '＜情 報＞',
                   style: TextStyle(fontSize: 24, color: Colors.blue[800]),
                 ),
               ),
@@ -123,8 +126,8 @@ class PageDetail extends ConsumerWidget {
                 child: Row(
                   children: [
                     Text(
-                      '[バーコード値] ${_codeValue}',
-                      style: TextStyle(fontSize: 18),
+                      '[バーコード値] $_codeValue',
+                      style: const TextStyle(fontSize: 18),
                     ),
                     const SizedBox(width: 8),
                     Align(
@@ -139,15 +142,9 @@ class PageDetail extends ConsumerWidget {
                         onPressed: () async {
                           // ◆バーコードからOpen Food Facts APIで情報を取得する
                           final Map<String, dynamic>? productInfo =
-                              await fetchProductInfo('${_codeValue}');
+                              await fetchProductInfo('$_codeValue');
 
                           if (productInfo != null) {
-                            // 商品名を取得
-                            final String productName =
-                                productInfo['product']['product_name'];
-                            print('製品名=$productName');
-
-                            // ◆続きはここから
                             ref.read(Provider_Product_Info.notifier).state =
                                 productInfo;
                             initialized = false;
@@ -202,6 +199,7 @@ class PageDetail extends ConsumerWidget {
                           LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
+                          hintText: '例)チキチキボーン(骨なし)',
                           isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
@@ -239,6 +237,7 @@ class PageDetail extends ConsumerWidget {
                           LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
+                          hintText: '例)日本ハム',
                           isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
@@ -277,6 +276,7 @@ class PageDetail extends ConsumerWidget {
                           LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
+                          hintText: '例)日本',
                           isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
@@ -314,6 +314,7 @@ class PageDetail extends ConsumerWidget {
                           LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
+                          hintText: '例)174 g',
                           isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
@@ -351,6 +352,7 @@ class PageDetail extends ConsumerWidget {
                           LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
+                          hintText: '例)生鮮市場TOP',
                           isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
@@ -365,11 +367,58 @@ class PageDetail extends ConsumerWidget {
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 8, left: 20, right: 8),
-                child: Text(
-                  '[コメント] ',
-                  style: TextStyle(fontSize: 18),
+              Padding(
+                padding: EdgeInsets.only(top: 0, left: 20, right: 8, bottom: 0),
+                child: Row(
+                  children: [
+                    const Text(
+                      '[コメント] ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    SizedBox(
+                      width: 42,
+                      height: 42,
+                      child: IconButton(
+                        padding: const EdgeInsets.all(0),
+                        // constraints: const BoxConstraints(), // デフォルトの制約を削除
+                        onPressed: () {
+                          if (_favorit < 5) {
+                            _favorit = _favorit + 1;
+                            productInfo?['product']?['favorit'] = _favorit;
+                            ref
+                                .read(Provider_detail_item_update.notifier)
+                                .state = !update;
+                          }
+                        },
+                        icon: const Icon(Icons.thumb_up),
+                        color: Colors.blue,
+                      ),
+                    ),
+                    ...List.generate(5, (index) {
+                      return Icon(
+                        Icons.favorite,
+                        color: index < _favorit ? Colors.pink : Colors.grey,
+                      );
+                    }),
+                    SizedBox(
+                      width: 42,
+                      height: 42,
+                      child: IconButton(
+                        padding: const EdgeInsets.all(0),
+                        onPressed: () {
+                          if (_favorit > 0) {
+                            _favorit = _favorit - 1;
+                            productInfo?['product']?['favorit'] = _favorit;
+                            ref
+                                .read(Provider_detail_item_update.notifier)
+                                .state = !update;
+                          }
+                        },
+                        icon: const Icon(Icons.thumb_down),
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(
@@ -384,7 +433,7 @@ class PageDetail extends ConsumerWidget {
                         controller: _commentController,
                         maxLines: 3,
                         inputFormatters: [
-                          // 最大200文字まで
+                          // 最大50文字まで
                           LengthLimitingTextInputFormatter(50),
                         ],
                         onChanged: (newComment) {
@@ -392,6 +441,7 @@ class PageDetail extends ConsumerWidget {
                           productInfo?['product']?['comment'] = newComment;
                         },
                         decoration: const InputDecoration(
+                          hintText: '例)鶏むね肉にスパイシーな衣をつけて、植物油でカラッと揚げました。',
                           isDense: true,
                           contentPadding: EdgeInsets.all(4.0), // テキスト下部の余白を調整
                           focusedBorder: UnderlineInputBorder(
@@ -475,14 +525,15 @@ class PageDetail extends ConsumerWidget {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.all(4.0),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 4.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          fixedSize: const Size.fromHeight(55),
+                          fixedSize: const Size.fromHeight(50),
                           backgroundColor: Colors.amber[300],
                         ),
                         onPressed: () async {
@@ -499,6 +550,7 @@ class PageDetail extends ConsumerWidget {
                               'storeName': _storeName,
                               'comment': _comment,
                               'imageUrl': _imageUrl,
+                              'favorit': _favorit,
                             });
                             if (result) {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -541,7 +593,7 @@ class PageDetail extends ConsumerWidget {
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          fixedSize: const Size.fromHeight(55),
+                          fixedSize: const Size.fromHeight(50),
                           backgroundColor: Colors.pink[200],
                         ),
                         onPressed: () {
