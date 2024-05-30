@@ -101,6 +101,7 @@ class PageCamera extends ConsumerWidget {
                           'store': product['storeName'],
                           'comment': product['comment'],
                           'image_url': product['imageUrl'],
+                          'favorit': product['favorit'],
                         },
                       };
                       ref.read(Provider_Product_Info.notifier).state =
