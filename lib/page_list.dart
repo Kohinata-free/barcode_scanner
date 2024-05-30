@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:barcode_scanner/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +8,7 @@ import 'appbar_component_widget.dart';
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/main.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:path/path.dart' as path;
 
 // ignore: must_be_immutable
 class PageList extends ConsumerWidget {
@@ -20,6 +23,34 @@ class PageList extends ConsumerWidget {
     var products = await retrieveProducts();
     ref.read(Provider_Products_List.notifier).state = products;
     ref.read(Provider_progress.notifier).state = false;
+
+    Set<String> localImagePaths = products
+        .map<String>((product) => product['imageUrl'])
+        .where((imageUrl) => !imageUrl.startsWith('http'))
+        .toSet();
+
+    Set<FileSystemEntity> allFiles = {};
+
+    for (String localpath in localImagePaths) {
+      File imageFile = File(localpath);
+
+      if (await imageFile.exists()) {
+        Directory directory = imageFile.parent;
+        allFiles.addAll(directory.listSync());
+      }
+
+      // 取得したファイルの拡張子
+      String fileExtension = path.extension(imageFile.path);
+
+      for (FileSystemEntity file in allFiles) {
+        if (file is File &&
+            path.extension(file.path) == fileExtension &&
+            !localImagePaths.contains(file.path)) {
+          await file.delete();
+          debugPrint('ファイルを削除しました: ${file.path}');
+        }
+      }
+    }
   }
 
   @override
