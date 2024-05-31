@@ -25,12 +25,19 @@ dependencies:
     sdk: flutter
   intl: any
   image_picker: ^1.1.1
+  flutter_native_splash: ^2.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+flutter_launcher_icons:
+# flutter_icons:
+  ios: true       # iOSのアイコンを生成し、デフォルトのものと置き換えるか
+  android: true   # Androidのアイコンを生成し、デフォルトのものと置き換えるか
+  image_path: "assets/images/application.png"   # アイコン画像のパス
 
 flutter:
   generate: true
@@ -40,3 +47,14 @@ flutter:
     - assets/images/
     - assets/sounds/
     - assets/google_fonts/
+
+flutter_native_splash:
+  color: "#00FFFF"  # スプラッシュ画面の背景色
+  image: "assets/images/splash.png" # スプラッシュ画面の中央に表示する画像
+
+  android_12:   # 12以上の標準スプラッシュ画面の設定
+    color: "#FF00FF"
+    image: "assets/images/splash.png"
+  
+  android_gravity: left   # Androidアイコンの画像の位置
+  ios_content_mode: left  # iOSのアイコンの画像の位置
