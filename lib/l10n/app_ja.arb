@@ -1,5 +1,10 @@
 {
+  "@@locale": "ja",
+
   "title_app": "商品バーコード管理",
+  "@title_app": {
+    "description": "アプリのタイトル"
+  },
   "itemList_title": "＜商品リスト＞",
   "itemList_btnUpdate": "更　新",
   "itemList_btnReadBarCode": "バーコード読取",
@@ -9,7 +14,25 @@
   "itemList_delete_btnNo": "いいえ",
   "camera_message": "バーコードをピピッとどうぞ！",
   "camera_btnCancel": "商品一覧へ戻る",
+  "itemDetail_title": "＜情　報＞",
   "itemDetail_getInfo": "情報取得",
+  "itemDetail_category_barcode": "[バーコード]",
+  "itemDetail_category_name": "[商品名]",
+  "itemDetail_category_maker": "[メーカー]",
+  "itemDetail_category_country": "[生産国]",
+  "itemDetail_category_capacity": "[容量]",
+  "itemDetail_category_store": "[お店]",
+  "itemDetail_category_comment": "[コメント]",
+  "itemDetail_hint_name": "例)チキチキボーン(骨なし)",
+  "itemDetail_hint_maker": "例)日本ハム",
+  "itemDetail_hint_country": "例)日本",
+  "itemDetail_hint_capacity": "例)174 g",
+  "itemDetail_hint_store": "例)生鮮市場TOP",
+  "itemDetail_hint_comment": "例)鶏むね肉にスパイシーな衣をつけて、植物油でカラッと揚げました。",
+  "itemDetail_btnPhoto": "カメラで撮影",
   "itemDetail_btnSave": "保　存",
-  "itemDetail_btnReturn": "一覧に戻る"
+  "itemDetail_btnReturn": "一覧に戻る",
+  "itemDetail_snacker_save": "商品情報を保存しました",
+  "itemDetail_snacker_save_limit": "商品情報の保存は100件まです",
+  "itemDetail_snacker_save_error": "商品情報の保存に失敗しました"
 }

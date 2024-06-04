@@ -117,7 +117,7 @@ class PageDetail extends ConsumerWidget {
               Container(
                 alignment: Alignment.center,
                 child: Text(
-                  '＜情 報＞',
+                  l10n.itemDetail_title,
                   style: TextStyle(fontSize: 24, color: Colors.blue[800]),
                 ),
               ),
@@ -126,7 +126,7 @@ class PageDetail extends ConsumerWidget {
                 child: Row(
                   children: [
                     Text(
-                      '[バーコード値] $_codeValue',
+                      '${l10n.itemDetail_category_barcode}  $_codeValue',
                       style: const TextStyle(fontSize: 18),
                     ),
                     const SizedBox(width: 8),
@@ -179,9 +179,9 @@ class PageDetail extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
                 child: Row(
                   children: [
-                    const Text(
-                      '[商品名] ',
-                      style: TextStyle(fontSize: 18),
+                    Text(
+                      '${l10n.itemDetail_category_name} ',
+                      style: const TextStyle(fontSize: 18),
                     ),
                     Expanded(
                       child: TextField(
@@ -198,12 +198,12 @@ class PageDetail extends ConsumerWidget {
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
-                        decoration: const InputDecoration(
-                          hintText: '例)チキチキボーン(骨なし)',
+                        decoration: InputDecoration(
+                          hintText: l10n.itemDetail_hint_name,
                           isDense: true,
                           contentPadding:
-                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-                          focusedBorder: UnderlineInputBorder(
+                              const EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
@@ -218,9 +218,9 @@ class PageDetail extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
                 child: Row(
                   children: [
-                    const Text(
-                      '[メーカー] ',
-                      style: TextStyle(fontSize: 18),
+                    Text(
+                      '${l10n.itemDetail_category_maker} ',
+                      style: const TextStyle(fontSize: 18),
                     ),
                     Expanded(
                       child: TextField(
@@ -236,12 +236,12 @@ class PageDetail extends ConsumerWidget {
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
-                        decoration: const InputDecoration(
-                          hintText: '例)日本ハム',
+                        decoration: InputDecoration(
+                          hintText: l10n.itemDetail_hint_maker,
                           isDense: true,
                           contentPadding:
-                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-                          focusedBorder: UnderlineInputBorder(
+                              const EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
@@ -256,9 +256,9 @@ class PageDetail extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
                 child: Row(
                   children: [
-                    const Text(
-                      '[生産国] ',
-                      style: TextStyle(fontSize: 18),
+                    Text(
+                      '${l10n.itemDetail_category_country} ',
+                      style: const TextStyle(fontSize: 18),
                     ),
                     Expanded(
                       child: TextField(
@@ -275,12 +275,12 @@ class PageDetail extends ConsumerWidget {
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
-                        decoration: const InputDecoration(
-                          hintText: '例)日本',
+                        decoration: InputDecoration(
+                          hintText: l10n.itemDetail_hint_country,
                           isDense: true,
                           contentPadding:
-                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-                          focusedBorder: UnderlineInputBorder(
+                              const EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
@@ -295,9 +295,9 @@ class PageDetail extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
                 child: Row(
                   children: [
-                    const Text(
-                      '[容量] ',
-                      style: TextStyle(fontSize: 18),
+                    Text(
+                      '${l10n.itemDetail_category_capacity} ',
+                      style: const TextStyle(fontSize: 18),
                     ),
                     Expanded(
                       child: TextField(
@@ -313,12 +313,12 @@ class PageDetail extends ConsumerWidget {
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
-                        decoration: const InputDecoration(
-                          hintText: '例)174 g',
+                        decoration: InputDecoration(
+                          hintText: l10n.itemDetail_hint_capacity,
                           isDense: true,
                           contentPadding:
-                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-                          focusedBorder: UnderlineInputBorder(
+                              const EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
@@ -333,9 +333,9 @@ class PageDetail extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
                 child: Row(
                   children: [
-                    const Text(
-                      '[お店] ',
-                      style: TextStyle(fontSize: 18),
+                    Text(
+                      '${l10n.itemDetail_category_store} ',
+                      style: const TextStyle(fontSize: 18),
                     ),
                     Expanded(
                       child: TextField(
@@ -351,12 +351,12 @@ class PageDetail extends ConsumerWidget {
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
-                        decoration: const InputDecoration(
-                          hintText: '例)生鮮市場TOP',
+                        decoration: InputDecoration(
+                          hintText: l10n.itemDetail_hint_store,
                           isDense: true,
                           contentPadding:
-                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-                          focusedBorder: UnderlineInputBorder(
+                              const EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
@@ -368,12 +368,13 @@ class PageDetail extends ConsumerWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 0, left: 20, right: 8, bottom: 0),
+                padding: const EdgeInsets.only(
+                    top: 0, left: 20, right: 8, bottom: 0),
                 child: Row(
                   children: [
-                    const Text(
-                      '[コメント] ',
-                      style: TextStyle(fontSize: 18),
+                    Text(
+                      '${l10n.itemDetail_category_comment} ',
+                      style: const TextStyle(fontSize: 18),
                     ),
                     SizedBox(
                       width: 42,
@@ -440,22 +441,23 @@ class PageDetail extends ConsumerWidget {
                           _comment = newComment;
                           productInfo?['product']?['comment'] = newComment;
                         },
-                        decoration: const InputDecoration(
-                          hintText: '例)鶏むね肉にスパイシーな衣をつけて、植物油でカラッと揚げました。',
+                        decoration: InputDecoration(
+                          hintText: l10n.itemDetail_hint_comment,
                           isDense: true,
-                          contentPadding: EdgeInsets.all(4.0), // テキスト下部の余白を調整
-                          focusedBorder: UnderlineInputBorder(
+                          contentPadding:
+                              const EdgeInsets.all(4.0), // テキスト下部の余白を調整
+                          focusedBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
                           ),
-                          enabledBorder: OutlineInputBorder(
+                          enabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.grey,
                             ),
                           ),
                           filled: true,
-                          fillColor: Color.fromARGB(255, 180, 230, 250),
+                          fillColor: const Color.fromARGB(255, 180, 230, 250),
                         ),
                       ),
                     ),
@@ -491,8 +493,8 @@ class PageDetail extends ConsumerWidget {
                     ),
                   ),
                   Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 8.0),
                     alignment: Alignment.center,
                     child: ElevatedButton(
                       onPressed: () async {
@@ -516,9 +518,9 @@ class PageDetail extends ConsumerWidget {
                           vertical: 4.0,
                         ),
                       ),
-                      child: const Text(
-                        'カメラで撮影',
-                        style: TextStyle(fontSize: 16),
+                      child: Text(
+                        l10n.itemDetail_btnPhoto,
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ),
                   ),
@@ -553,9 +555,10 @@ class PageDetail extends ConsumerWidget {
                               'favorit': _favorit,
                             });
                             if (result) {
+                              if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('商品情報を保存しました'),
+                                SnackBar(
+                                  content: Text(l10n.itemDetail_snacker_save),
                                 ),
                               );
                               // }
@@ -567,15 +570,18 @@ class PageDetail extends ConsumerWidget {
                                   false;
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('商品情報の保存は100件まです'),
+                                SnackBar(
+                                  content:
+                                      Text(l10n.itemDetail_snacker_save_limit),
                                 ),
                               );
                             }
                           } catch (e) {
+                            if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('商品情報の保存に失敗しました'),
+                              SnackBar(
+                                content:
+                                    Text(l10n.itemDetail_snacker_save_error),
                               ),
                             );
                           }
