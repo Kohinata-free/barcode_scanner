@@ -4,9 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AppBarComponentWidget extends StatelessWidget
     implements PreferredSizeWidget {
-  AppBarComponentWidget({super.key});
-  // AppBarComponentWidget({required this.title, super.key});
-  // final String title;
+  const AppBarComponentWidget({super.key});
 
   @override
   Size get preferredSize {

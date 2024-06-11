@@ -1,6 +1,4 @@
 import 'package:sqflite/sqflite.dart';
-// import 'package:path/path.dart';
-// import 'package:path_provider/path_provider.dart';
 
 const String db_name = 'products_database.db';
 
@@ -15,7 +13,7 @@ Future<Database> initDatabase() async {
     version: 1,
     onCreate: (db, version) async {
       await db.execute(
-        "CREATE TABLE IF NOT EXISTS products(barcode TEXT PRIMARY KEY,  productName TEXT, makerName TEXT, brandName TEXT, countryName TEXT, quantity TEXT, storeName TEXT, comment TEXT, imageUrl TEXT, favorit INTEGER)",
+        "CREATE TABLE IF NOT EXISTS products(barcode TEXT PRIMARY KEY,  productName TEXT, makerName TEXT, countryName TEXT, quantity TEXT, storeName TEXT, comment TEXT, imageUrl TEXT, favorit INTEGER)",
       );
 
       // トリガーの作成
