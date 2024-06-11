@@ -41,14 +41,14 @@ class PageDetail extends ConsumerWidget {
   bool initialized = false;
   String codeValue = '-----';
   // TextEditingControllerのTextに設定する変数
-  String _productName = '未登録';
-  String _makerName = '未登録';
-  String _brandName = '未登録';
-  String _countryName = '未登録';
+  String _productName = '';
+  String _makerName = '';
+  // String _brandName = '';
+  String _countryName = '';
   String _imageUrl = '';
-  String _quantity = '未登録';
+  String _quantity = '';
   String _storeName = '';
-  String _comment = '未登録';
+  String _comment = '';
   int _favorit = 1;
 
   // TextEditingController:TextFieldに初期値を与えるために使用
@@ -75,29 +75,29 @@ class PageDetail extends ConsumerWidget {
     // カメラコントローラ
     final imagePicker = ImagePicker();
 
-    String _codeValue = scandata != null
-        ? scandata.barcodes.first.rawValue
-        : productInfo?['product']['code'] ?? '-----';
+    // String codeValue = scandata != null
+    //     ? scandata.barcodes.first.rawValue
+    //     : productInfo?['product']['code'] ?? '-----';
 
     // 商品情報のブランド
     if (!initialized) {
-      _codeValue = scandata != null
+      codeValue = scandata != null
           ? scandata.barcodes.first.rawValue
           : productInfo?['product']['code'] ?? '-----';
-      _brandName = productInfo?['product']?['brands'] ?? '未登録';
-      // _brandNameController = TextEditingController(text: _brandName);
-      _makerName = productInfo?['product']?['maker'] ?? '未登録';
+      //   _brandName = productInfo?['product']?['brands'] ?? '未登録';
+      //   // _brandNameController = TextEditingController(text: _brandName);
+      _makerName = productInfo?['product']?['maker'] ?? '';
       _makerNameController = TextEditingController(text: _makerName);
-      _productName = productInfo?['product']?['product_name'] ?? '未登録';
+      _productName = productInfo?['product']?['product_name'] ?? '';
       _productNameController = TextEditingController(text: _productName);
-      _countryName = productInfo?['product']?['countries'] ?? '未登録';
+      _countryName = productInfo?['product']?['countries'] ?? '';
       _countryNameController = TextEditingController(text: _countryName);
       _imageUrl = productInfo?['product']?['image_url'] ?? '';
-      _quantity = productInfo?['product']?['quantity'] ?? '未登録';
+      _quantity = productInfo?['product']?['quantity'] ?? '';
       _quantityController = TextEditingController(text: _quantity);
       _storeName = productInfo?['product']?['storeName'] ?? '';
       _storeNameController = TextEditingController(text: _storeName);
-      _comment = productInfo?['product']?['comment'] ?? '未登録';
+      _comment = productInfo?['product']?['comment'] ?? '';
       _commentController = TextEditingController(text: _comment);
       _favorit = productInfo?['product']?['favorit'] ?? 1;
       initialized = true;
@@ -126,7 +126,7 @@ class PageDetail extends ConsumerWidget {
                 child: Row(
                   children: [
                     Text(
-                      '${l10n.itemDetail_category_barcode}  $_codeValue',
+                      '${l10n.itemDetail_category_barcode}  $codeValue',
                       style: const TextStyle(fontSize: 18),
                     ),
                     const SizedBox(width: 8),
@@ -142,7 +142,7 @@ class PageDetail extends ConsumerWidget {
                         onPressed: () async {
                           // ◆バーコードからOpen Food Facts APIで情報を取得する
                           final Map<String, dynamic>? productInfo =
-                              await fetchProductInfo('$_codeValue');
+                              await fetchProductInfo('$codeValue');
 
                           if (productInfo != null) {
                             ref.read(Provider_Product_Info.notifier).state =
@@ -159,21 +159,12 @@ class PageDetail extends ConsumerWidget {
                   ],
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 8,
-                ),
-                height: 1,
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.grey,
-                      width: 1,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                ),
+              const Divider(
+                // height: 10,
+                thickness: 2,
+                indent: 20,
+                endIndent: 8,
+                color: Colors.blue,
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8, left: 20, right: 8),
@@ -476,14 +467,14 @@ class PageDetail extends ConsumerWidget {
                           ? (_imageUrl.startsWith('http')
                               ? Image.network(
                                   _imageUrl,
-                                  width: 130, // adjust the width as needed
-                                  height: 130, // adjust the height as needed
+                                  width: 136, // adjust the width as needed
+                                  height: 136, // adjust the height as needed
                                   fit: BoxFit.cover, // adjust the fit as needed
                                 )
                               : Image.file(
                                   File(_imageUrl),
-                                  width: 130, // adjust the width as needed
-                                  height: 130, // adjust the height as needed
+                                  width: 136, // adjust the width as needed
+                                  height: 136, // adjust the height as needed
                                   fit: BoxFit.cover, // adjust the fit as needed
                                 ))
                           : const Text(
@@ -543,10 +534,10 @@ class PageDetail extends ConsumerWidget {
                             // if (productInfo != null) {
                             // 商品情報をSQLiteデータベースに保存
                             bool result = await insertProduct({
-                              'barcode': _codeValue,
+                              'barcode': codeValue,
                               'productName': _productName,
                               'makerName': _makerName,
-                              'brandName': _brandName,
+                              // 'brandName': _brandName,
                               'countryName': _countryName,
                               'quantity': _quantity,
                               'storeName': _storeName,
