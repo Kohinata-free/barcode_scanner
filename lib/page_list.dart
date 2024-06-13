@@ -26,12 +26,13 @@ class PageList extends ConsumerWidget {
 
     Set<String> localImagePaths = products
         .map<String>((product) => product['imageUrl'])
-        .where((imageUrl) => !imageUrl.startsWith('http'))
+        .where((imageUrl) =>
+            (!imageUrl.startsWith('http') && (imageUrl.isNotEmpty)))
         .toSet();
 
-    Set<FileSystemEntity> allFiles = {};
-
     for (String localpath in localImagePaths) {
+      Set<FileSystemEntity> allFiles = {};
+
       File imageFile = File(localpath);
 
       if (await imageFile.exists()) {
