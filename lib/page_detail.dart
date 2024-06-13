@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/home.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,6 +61,22 @@ class PageDetail extends ConsumerWidget {
   late TextEditingController _storeNameController;
   late TextEditingController _commentController;
 
+  // カメラコントローラ
+  // var imagePicker = ImagePicker();
+  CameraController? _cameraController;
+  XFile? _imageFile;
+  late List<CameraDescription> cameras;
+
+  Future<void> _initializeCamera() async {
+    cameras = await availableCameras();
+    _cameraController = CameraController(
+      cameras.first,
+      ResolutionPreset.high,
+    );
+
+    await _cameraController?.initialize();
+  }
+
   @override
   Widget build(BuildContext context, ref) {
     // バーコード
@@ -72,8 +89,10 @@ class PageDetail extends ConsumerWidget {
     // メッセージ管理
     final l10n = L10n.of(context);
 
+    debugPrint("🔸page_detail->build()");
+
     // カメラコントローラ
-    final imagePicker = ImagePicker();
+    // final imagePicker = ImagePicker();
 
     // String codeValue = scandata != null
     //     ? scandata.barcodes.first.rawValue
@@ -142,7 +161,7 @@ class PageDetail extends ConsumerWidget {
                         onPressed: () async {
                           // ◆バーコードからOpen Food Facts APIで情報を取得する
                           final Map<String, dynamic>? productInfo =
-                              await fetchProductInfo('$codeValue');
+                              await fetchProductInfo(codeValue);
 
                           if (productInfo != null) {
                             ref.read(Provider_Product_Info.notifier).state =
@@ -182,8 +201,8 @@ class PageDetail extends ConsumerWidget {
                         controller: _productNameController,
                         onChanged: (newProductName) {
                           _productName = newProductName;
-                          productInfo?['product']?['product_name'] =
-                              newProductName;
+                          // productInfo?['product']?['product_name'] =
+                          //     newProductName;
                         },
                         inputFormatters: [
                           // 最大15文字まで
@@ -221,7 +240,7 @@ class PageDetail extends ConsumerWidget {
                         controller: _makerNameController,
                         onChanged: (newMakerName) {
                           _makerName = newMakerName;
-                          productInfo?['product']?['maker'] = newMakerName;
+                          // productInfo?['product']?['maker'] = newMakerName;
                         },
                         inputFormatters: [
                           // 最大15文字まで
@@ -259,8 +278,8 @@ class PageDetail extends ConsumerWidget {
                         controller: _countryNameController,
                         onChanged: (newCountryName) {
                           _countryName = newCountryName;
-                          productInfo?['product']?['countries'] =
-                              newCountryName;
+                          //   productInfo?['product']?['countries'] =
+                          //       newCountryName;
                         },
                         inputFormatters: [
                           // 最大15文字まで
@@ -298,7 +317,7 @@ class PageDetail extends ConsumerWidget {
                         controller: _quantityController,
                         onChanged: (newQuantity) {
                           _quantity = newQuantity;
-                          productInfo?['product']?['quantity'] = newQuantity;
+                          // productInfo?['product']?['quantity'] = newQuantity;
                         },
                         inputFormatters: [
                           // 最大15文字まで
@@ -336,7 +355,7 @@ class PageDetail extends ConsumerWidget {
                         controller: _storeNameController,
                         onChanged: (newStoreName) {
                           _storeName = newStoreName;
-                          productInfo?['product']?['storeName'] = newStoreName;
+                          // productInfo?['product']?['storeName'] = newStoreName;
                         },
                         inputFormatters: [
                           // 最大15文字まで
@@ -430,7 +449,7 @@ class PageDetail extends ConsumerWidget {
                         ],
                         onChanged: (newComment) {
                           _comment = newComment;
-                          productInfo?['product']?['comment'] = newComment;
+                          // productInfo?['product']?['comment'] = newComment;
                         },
                         decoration: InputDecoration(
                           hintText: l10n.itemDetail_hint_comment,
@@ -463,56 +482,133 @@ class PageDetail extends ConsumerWidget {
                     alignment: Alignment.center,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 8, bottom: 8),
-                      child: (_imageUrl.isNotEmpty)
-                          ? (_imageUrl.startsWith('http')
-                              ? Image.network(
-                                  _imageUrl,
-                                  width: 136, // adjust the width as needed
-                                  height: 136, // adjust the height as needed
-                                  fit: BoxFit.cover, // adjust the fit as needed
-                                )
-                              : Image.file(
-                                  File(_imageUrl),
-                                  width: 136, // adjust the width as needed
-                                  height: 136, // adjust the height as needed
-                                  fit: BoxFit.cover, // adjust the fit as needed
-                                ))
-                          : const Text(
-                              'No Image',
-                              style: TextStyle(fontSize: 20),
-                            ),
+                      child: (_cameraController != null &&
+                              _cameraController!.value.isInitialized)
+                          // ? const Text('画像プレビュー')
+                          ? Container(
+                              width: 136,
+                              height: 136,
+                              child: AspectRatio(
+                                aspectRatio:
+                                    _cameraController!.value.aspectRatio,
+                                child: CameraPreview(_cameraController!),
+                              ),
+                            )
+                          : (_imageUrl.isNotEmpty)
+                              ? (_imageUrl.startsWith('http')
+                                  ? Image.network(
+                                      _imageUrl,
+                                      width: 136, // adjust the width as needed
+                                      height:
+                                          136, // adjust the height as needed
+                                      fit: BoxFit
+                                          .cover, // adjust the fit as needed
+                                    )
+                                  : Image.file(
+                                      File(_imageUrl),
+                                      width: 136, // adjust the width as needed
+                                      height:
+                                          136, // adjust the height as needed
+                                      fit: BoxFit
+                                          .cover, // adjust the fit as needed
+                                    ))
+                              : const Text(
+                                  'No Image',
+                                  style: TextStyle(fontSize: 20),
+                                ),
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 8.0),
                     alignment: Alignment.center,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final imageFilePath = await imagePicker.pickImage(
-                            source: ImageSource.camera);
-                        if (imageFilePath == null) return;
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (_cameraController == null) {
+                              await _initializeCamera();
+                              ref
+                                  .read(Provider_detail_item_update.notifier)
+                                  .state = !update;
+                            } else {
+                              if (!_cameraController!.value.isInitialized) {
+                                return;
+                              }
+                              try {
+                                XFile picture =
+                                    await _cameraController!.takePicture();
+                                _imageFile = picture;
+                              } catch (e) {
+                                print(e);
+                              }
+                              if (_imageFile != null) {
+                                _imageUrl = _imageFile!.path;
+                                // productInfo?['product']?['image_url'] = _imageUrl;
+                              }
+                              await _cameraController?.dispose();
+                              _cameraController = null;
+                              ref
+                                  .read(Provider_detail_item_update.notifier)
+                                  .state = !update;
+                            }
+                          },
+                          // onPressed: () async {
+                          //   // カメラコントローラ
+                          //   var imagePicker = ImagePicker();
 
-                        final imagePath = File(imageFilePath.path);
+                          //   final imageFilePath = await imagePicker.pickImage(
+                          //       source: ImageSource.camera);
+                          //   if (imageFilePath == null) return;
 
-                        _imageUrl = imagePath.path;
-                        productInfo?['product']?['image_url'] = _imageUrl;
+                          //   final imagePath = File(imageFilePath.path);
 
-                        ref.read(Provider_detail_item_update.notifier).state =
-                            !update;
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4.0,
+                          //   _imageUrl = imagePath.path;
+                          //   // productInfo?['product']?['image_url'] = _imageUrl;
+
+                          //   ref.read(Provider_detail_item_update.notifier).state =
+                          //       !update;
+                          // },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 4.0,
+                            ),
+                          ),
+                          child: Text(
+                            (_cameraController == null)
+                                ? l10n.itemDetail_btnPhoto
+                                : '押してください',
+                            style: const TextStyle(fontSize: 16),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        l10n.itemDetail_btnPhoto,
-                        style: const TextStyle(fontSize: 16),
-                      ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (_cameraController != null) {
+                              await _cameraController?.dispose();
+                              _cameraController = null;
+                            }
+                            ref
+                                .read(Provider_detail_item_update.notifier)
+                                .state = !update;
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 4.0,
+                            ),
+                          ),
+                          child: Text(
+                            // l10n.itemDetail_btnPhoto,
+                            'キャンセル',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
