@@ -208,12 +208,12 @@ class PageDetail extends ConsumerWidget {
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
-                        decoration: InputDecoration(
-                          hintText: l10n.itemDetail_hint_name,
+                        decoration: const InputDecoration(
+                          // hintText: l10n.itemDetail_hint_name,
                           isDense: true,
                           contentPadding:
-                              const EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-                          focusedBorder: const UnderlineInputBorder(
+                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
@@ -246,12 +246,12 @@ class PageDetail extends ConsumerWidget {
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
-                        decoration: InputDecoration(
-                          hintText: l10n.itemDetail_hint_maker,
+                        decoration: const InputDecoration(
+                          // hintText: l10n.itemDetail_hint_maker,
                           isDense: true,
                           contentPadding:
-                              const EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-                          focusedBorder: const UnderlineInputBorder(
+                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
@@ -285,12 +285,12 @@ class PageDetail extends ConsumerWidget {
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
-                        decoration: InputDecoration(
-                          hintText: l10n.itemDetail_hint_country,
+                        decoration: const InputDecoration(
+                          // hintText: l10n.itemDetail_hint_country,
                           isDense: true,
                           contentPadding:
-                              const EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-                          focusedBorder: const UnderlineInputBorder(
+                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
@@ -323,12 +323,12 @@ class PageDetail extends ConsumerWidget {
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
-                        decoration: InputDecoration(
-                          hintText: l10n.itemDetail_hint_capacity,
+                        decoration: const InputDecoration(
+                          // hintText: l10n.itemDetail_hint_capacity,
                           isDense: true,
                           contentPadding:
-                              const EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-                          focusedBorder: const UnderlineInputBorder(
+                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
@@ -361,12 +361,12 @@ class PageDetail extends ConsumerWidget {
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
-                        decoration: InputDecoration(
-                          hintText: l10n.itemDetail_hint_store,
+                        decoration: const InputDecoration(
+                          // hintText: l10n.itemDetail_hint_store,
                           isDense: true,
                           contentPadding:
-                              const EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
-                          focusedBorder: const UnderlineInputBorder(
+                              EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
+                          focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
@@ -451,23 +451,22 @@ class PageDetail extends ConsumerWidget {
                           _comment = newComment;
                           // productInfo?['product']?['comment'] = newComment;
                         },
-                        decoration: InputDecoration(
-                          hintText: l10n.itemDetail_hint_comment,
+                        decoration: const InputDecoration(
+                          // hintText: l10n.itemDetail_hint_comment,
                           isDense: true,
-                          contentPadding:
-                              const EdgeInsets.all(4.0), // テキスト下部の余白を調整
-                          focusedBorder: const UnderlineInputBorder(
+                          contentPadding: EdgeInsets.all(4.0), // テキスト下部の余白を調整
+                          focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red, // フォーカス時のアンダーラインの色を設定
                             ),
                           ),
-                          enabledBorder: const OutlineInputBorder(
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.grey,
                             ),
                           ),
                           filled: true,
-                          fillColor: const Color.fromARGB(255, 180, 230, 250),
+                          fillColor: Color.fromARGB(255, 180, 230, 250),
                         ),
                       ),
                     ),

@@ -34,11 +34,15 @@ dev_dependencies:
 
   flutter_lints: ^3.0.0
   flutter_launcher_icons: ^0.13.1
+
 flutter_launcher_icons:
 # flutter_icons:
   ios: true       # iOSのアイコンを生成し、デフォルトのものと置き換えるか
-  android: true   # Androidのアイコンを生成し、デフォルトのものと置き換えるか
+  # android: true   # Androidのアイコンを生成し、デフォルトのものと置き換えるか
+  android: launcher_icon   # Androidのアイコンを生成し、デフォルトのものと置き換えるか
   image_path: "assets/images/application.png"   # アイコン画像のパス
+  adaptive_icon_foreground: "assets/images/adaptive_icon_foreground.png"
+  adaptive_icon_background: "assets/images/adaptive_icon_background.png"
 
 flutter:
   generate: true
@@ -57,5 +61,5 @@ flutter_native_splash:
     color: "#FF00FF"
     image: "assets/images/splash.png"
   
-  android_gravity: left   # Androidアイコンの画像の位置
-  ios_content_mode: left  # iOSのアイコンの画像の位置
+  # android_gravity: left   # Androidアイコンの画像の位置
+  # ios_content_mode: left  # iOSのアイコンの画像の位置
