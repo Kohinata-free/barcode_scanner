@@ -511,10 +511,23 @@ class PageDetail extends ConsumerWidget {
                                       fit: BoxFit
                                           .cover, // adjust the fit as needed
                                     ))
-                              : const Text(
-                                  'No Image',
-                                  style: TextStyle(fontSize: 20),
+                              // : Image.file(
+                              //     File('assets/images/application_face.png'),
+                              //     width: 136, // adjust the width as needed
+                              //     height: 136, // adjust the height as needed
+                              //     fit: BoxFit.cover, // adjust the fit as needed
+                              //   ),
+                              : Image.asset(
+                                  'assets/images/barcode_head_face.png',
+                                  height: 136,
+                                  width: 136,
+                                  fit: BoxFit.cover,
                                 ),
+
+                      //           : const Text(
+                      //               'No Image',
+                      //               style: TextStyle(fontSize: 20),
+                      //             ),
                     ),
                   ),
                   Container(

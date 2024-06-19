@@ -49,7 +49,8 @@ android {
 
         // The plugin mobile_scanner requires a higher Android SDK version.
         // minSdkVersion flutter.minSdkVersion
-        minSdkVersion 21
+        // minSdkVersion 21
+        minSdkVersion 24
         
         targetSdkVersion flutter.targetSdkVersion
         // targetSdkVersion 33
