@@ -592,7 +592,7 @@ class PageDetail extends ConsumerWidget {
                           child: Text(
                             (_cameraController == null)
                                 ? l10n.itemDetail_btnPhoto
-                                : '押してください',
+                                : l10n.itemDetail_btnTap,
                             style: const TextStyle(fontSize: 16),
                           ),
                         ),
@@ -615,8 +615,7 @@ class PageDetail extends ConsumerWidget {
                             ),
                           ),
                           child: Text(
-                            // l10n.itemDetail_btnPhoto,
-                            'キャンセル',
+                            l10n.itemDetail_cancel,
                             style: const TextStyle(fontSize: 16),
                           ),
                         ),
