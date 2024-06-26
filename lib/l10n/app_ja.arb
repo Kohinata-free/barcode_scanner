@@ -30,6 +30,8 @@
   "itemDetail_hint_store": "例)生鮮市場TOP",
   "itemDetail_hint_comment": "例)鶏むね肉にスパイシーな衣をつけて、植物油でカラッと揚げました。",
   "itemDetail_btnPhoto": "カメラで撮影",
+  "itemDetail_btnTap": "押してください",
+  "itemDetail_cancel": "キャンセル",
   "itemDetail_btnSave": "保　存",
   "itemDetail_btnReturn": "一覧に戻る",
   "itemDetail_snacker_save": "商品情報を保存しました",
