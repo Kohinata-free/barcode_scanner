@@ -73,6 +73,11 @@ class PageCamera extends ConsumerWidget {
                 // fit: BoxFit.contain,
                 // QRコードかバーコードが見つかった後すぐ実行する関数
                 onDetect: (scandata) async {
+                  if (scandata.barcodes.first.rawValue != null) {
+                    if (scandata.barcodes.first.rawValue!.startsWith('http')) {
+                      return;
+                    }
+                  }
                   // String? value = scandata.barcodes.first.rawValue;
                   if (_lastBarcode != scandata.barcodes.first.rawValue) {
                     // debugPrint('スキャン1回目:$value');
