@@ -26,14 +26,14 @@ class PageCamera extends ConsumerWidget {
   final double zoomFactor = 0.0;
   // 2スキャン用のバーコード値
   String? _lastBarcode;
+  // スキャナーの作用を制御するコントローラーのオブジェクト
+  MobileScannerController controller = MobileScannerController();
 
   PageCamera({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
     _lastBarcode = ref.watch(Provider_barcode);
-    // スキャナーの作用を制御するコントローラーのオブジェクト
-    MobileScannerController controller = MobileScannerController();
     // メッセージ管理
     final l10n = L10n.of(context);
     // バーコード
@@ -84,7 +84,8 @@ class PageCamera extends ConsumerWidget {
                     ref.read(Provider_barcode.notifier).state =
                         scandata.barcodes.first.rawValue;
                   } else {
-                    controller.stop(); // まずはカメラを止める
+                    await controller.stop(); // まずはカメラを止める
+                    controller.dispose();
                     // debugPrint('スキャン2回目:$value');
                     ref.read(Provider_Barcode_Info.notifier).state = scandata;
                     // 検知音を鳴らす
@@ -148,8 +149,9 @@ class PageCamera extends ConsumerWidget {
                         fixedSize: const Size.fromHeight(55),
                         backgroundColor: Colors.green[200],
                       ),
-                      onPressed: () {
-                        controller.stop(); // まずはカメラを止める
+                      onPressed: () async {
+                        await controller.stop(); // まずはカメラを止める
+                        controller.dispose();
                         ref.read(Provider_barcode.notifier).state = null;
                         Navigator.pop(context);
                       },
