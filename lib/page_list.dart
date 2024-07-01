@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:barcode_scanner/home.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -17,6 +18,7 @@ class PageList extends ConsumerWidget {
   // AppBar
   final appBar = AppBarComponentWidget();
   bool _initialized = false;
+
   // ◆初期化処理をしたい
   Future initialize(WidgetRef ref) async {
     // ref.read(Provider_progress.notifier).state = true;
@@ -54,6 +56,14 @@ class PageList extends ConsumerWidget {
     }
   }
 
+  void _fetchFirebaseData() async {
+    await FirebaseFirestore.instance.collection('items').get().then((event) {
+      for (var doc in event.docs) {
+        print("${doc.id} => ${doc.data()}");
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // メッセージ管理
@@ -78,6 +88,12 @@ class PageList extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  _fetchFirebaseData();
+                },
+                child: Text('firebase'),
+              ),
               // タイトル
               Container(
                 padding: const EdgeInsets.all(4),
