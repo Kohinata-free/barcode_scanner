@@ -8,13 +8,26 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'page_camera.dart';
 import 'page_detail.dart';
 
+// firebase用
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 // initializeフラグで商品詳細画面のTextFieldの更新を制御する
 // initializeフラグを操作するために商品詳細画面をグローバル化
 final pageDetail = PageDetail();
 
-void main() {
+void main() async {
+  // main関数でasync-awaitを使用する際に必要
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // firebase用
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   // google_fontsライセンス
   _registerLicenses();
+
   runApp(
     const ProviderScope(
       child: MyApp(),

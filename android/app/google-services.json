@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1006125960563",
+    "project_id": "barcode-scanner-659c4",
+    "storage_bucket": "barcode-scanner-659c4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006125960563:android:20e02d2e4a42b84a900906",
+        "android_client_info": {
+          "package_name": "com.example.PersonalBarcodeScanner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABqnJ0FPHGOv2CXTZme7RAMCJwjD3aht0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
