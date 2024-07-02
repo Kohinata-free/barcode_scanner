@@ -56,8 +56,8 @@ class PageList extends ConsumerWidget {
     }
   }
 
-  // !firebaseのデータベースから全てのデータを取得している→バーコード値を指定して1件取得するようにしたい
-  // !page_camera.dartの116行目からのOpen Food Factsから取得している所をfirebaseからの取得に変える
+  // !!firebaseのデータベースから全てのデータを取得している→バーコード値を指定して1件取得するようにしたい
+  // !!page_camera.dartの116行目からのOpen Food Factsから取得している所をfirebaseからの取得に変える
   void _fetchFirebaseData(WidgetRef ref) async {
     await FirebaseFirestore.instance.collection('items').get().then((event) {
       List<Map<String, dynamic>> dataMap = [];
