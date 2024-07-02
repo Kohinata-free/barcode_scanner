@@ -16,7 +16,7 @@ class PageList extends ConsumerWidget {
   PageList({super.key});
 
   // AppBar
-  final appBar = AppBarComponentWidget();
+  final appBar = const AppBarComponentWidget();
   bool _initialized = false;
 
   // ◆初期化処理をしたい
@@ -56,11 +56,17 @@ class PageList extends ConsumerWidget {
     }
   }
 
-  void _fetchFirebaseData() async {
+  // firebaseのデータベースから全てのデータを取得している→バーコード値を指定して1件取得するようにしたい
+  // page_camera.dartの116行目からのOpen Food Factsから取得している所をfirebaseからの取得に変える
+  void _fetchFirebaseData(WidgetRef ref) async {
     await FirebaseFirestore.instance.collection('items').get().then((event) {
+      List<Map<String, dynamic>> dataMap = [];
       for (var doc in event.docs) {
+        var datas = doc.data();
+        dataMap.add(datas);
         print("${doc.id} => ${doc.data()}");
       }
+      ref.read(Provider_Products_List2.notifier).state = dataMap;
     });
   }
 
@@ -71,6 +77,9 @@ class PageList extends ConsumerWidget {
 
     // 商品情報リスト
     final productList = ref.watch(Provider_Products_List);
+
+    // firebaseのデータベース
+    final productList2 = ref.watch(Provider_Products_List2);
 
     // 進捗
     final progress = ref.watch(Provider_progress);
@@ -90,7 +99,7 @@ class PageList extends ConsumerWidget {
             children: <Widget>[
               ElevatedButton(
                 onPressed: () {
-                  _fetchFirebaseData();
+                  _fetchFirebaseData(ref);
                 },
                 child: Text('firebase'),
               ),
