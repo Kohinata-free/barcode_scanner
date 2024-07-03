@@ -19,7 +19,7 @@ Future<void> playSound(String source) async {
 // ignore: must_be_immutable
 class PageCamera extends ConsumerWidget {
   // AppBar
-  final appBar = AppBarComponentWidget();
+  final appBar = const AppBarComponentWidget();
   // カメラがオンしているかどうか
   final bool isStarted = true;
   // ズームの程度。0から1まで。多いほど近い
@@ -36,8 +36,7 @@ class PageCamera extends ConsumerWidget {
     _lastBarcode = ref.watch(Provider_barcode);
     // メッセージ管理
     final l10n = L10n.of(context);
-    // バーコード
-    // final barcode = ref.watch(Provider_Barcode);
+
     return Scaffold(
       backgroundColor: Colors.blueGrey[100],
       appBar: appBar,
@@ -70,7 +69,6 @@ class PageCamera extends ConsumerWidget {
               child: MobileScanner(
                 controller: controller,
                 fit: BoxFit.cover,
-                // fit: BoxFit.contain,
                 // QRコードかバーコードが見つかった後すぐ実行する関数
                 onDetect: (scandata) async {
                   if (scandata.barcodes.first.rawValue != null) {
@@ -78,7 +76,6 @@ class PageCamera extends ConsumerWidget {
                       return;
                     }
                   }
-                  // String? value = scandata.barcodes.first.rawValue;
                   if (_lastBarcode != scandata.barcodes.first.rawValue) {
                     // debugPrint('スキャン1回目:$value');
                     ref.read(Provider_barcode.notifier).state =
@@ -97,34 +94,26 @@ class PageCamera extends ConsumerWidget {
                             scandata.barcodes.first.rawValue!);
                     if (product != null) {
                       final Map<String, dynamic> productInfo = {
-                        'product': {
-                          'code': product['barcode'],
-                          'product_name': product['productName'],
-                          'maker': product['makerName'],
-                          'brands': product['brandName'],
-                          'countries': product['countryName'],
-                          'quantity': product['quantity'],
-                          'store': product['storeName'],
-                          'comment': product['comment'],
-                          'image_url': product['imageUrl'],
-                          'favorit': product['favorit'],
-                        },
+                        'code': product['code'],
+                        'name': product['name'],
+                        'maker': product['maker'],
+                        // 'brands': product['brand'],
+                        'country': product['country'],
+                        'capacity': product['capacity'],
+                        'store': product['store'],
+                        'comment': product['comment'],
+                        'image_url': product['imageUrl'],
+                        'favorit': product['favorit'],
                       };
                       ref.read(Provider_Product_Info.notifier).state =
                           productInfo;
                     } else {
-                      // ◆バーコードからOpen Food Facts APIで情報を取得する
                       final Map<String, dynamic>? productInfo =
-                          await fetchProductInfo(
+                          await fetchFirebaseData(
                               scandata.barcodes.first.rawValue!);
 
                       if (productInfo != null) {
-                        // 商品名を取得
-                        final String productName =
-                            productInfo['product']['product_name'];
-                        print('製品名=$productName');
-
-                        // ◆続きはここから
+                        // 商品情報を更新
                         ref.read(Provider_Product_Info.notifier).state =
                             productInfo;
                       }

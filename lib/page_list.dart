@@ -1,10 +1,8 @@
 import 'dart:io';
 
 import 'package:barcode_scanner/home.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'appbar_component_widget.dart';
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/main.dart';
@@ -16,7 +14,7 @@ class PageList extends ConsumerWidget {
   PageList({super.key});
 
   // AppBar
-  final appBar = AppBarComponentWidget();
+  final appBar = const AppBarComponentWidget();
   bool _initialized = false;
 
   // ◆初期化処理をしたい
@@ -56,14 +54,6 @@ class PageList extends ConsumerWidget {
     }
   }
 
-  void _fetchFirebaseData() async {
-    await FirebaseFirestore.instance.collection('items').get().then((event) {
-      for (var doc in event.docs) {
-        print("${doc.id} => ${doc.data()}");
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // メッセージ管理
@@ -71,6 +61,9 @@ class PageList extends ConsumerWidget {
 
     // 商品情報リスト
     final productList = ref.watch(Provider_Products_List);
+
+    // firebaseのデータベース
+    final productList2 = ref.watch(Provider_Products_List2);
 
     // 進捗
     final progress = ref.watch(Provider_progress);
@@ -88,12 +81,6 @@ class PageList extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              ElevatedButton(
-                onPressed: () {
-                  _fetchFirebaseData();
-                },
-                child: Text('firebase'),
-              ),
               // タイトル
               Container(
                 padding: const EdgeInsets.all(4),
@@ -101,40 +88,12 @@ class PageList extends ConsumerWidget {
                 child: Text(
                   l10n.itemList_title,
                   textAlign: TextAlign.center,
-                  // style: const TextStyle(
-                  //   fontSize: 26,
-                  // ),
                   style: TextStyle(fontSize: 24, color: Colors.blue[800]),
                 ),
               ),
 
               // ■並び替えラジオボタン
               // const Text('並び替えボタンを置くよ'),
-
-              // ■商品リスト
-              // Container(
-              //   padding: const EdgeInsets.all(2),
-              //   child: ElevatedButton(
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: Colors.blue,
-              //       foregroundColor: Colors.white,
-              //       padding: const EdgeInsets.symmetric(
-              //           horizontal: 16, vertical: 4.0),
-              //     ),
-              //     onPressed: () async {
-              //       ref.read(Provider_progress.notifier).state = true;
-              //       var products = await retrieveProducts();
-              //       ref.read(Provider_Products_List.notifier).state = products;
-              //       ref.read(Provider_progress.notifier).state = false;
-              //     },
-              //     child: Text(
-              //       l10n.itemList_btnUpdate,
-              //       style: const TextStyle(
-              //         fontSize: 20,
-              //       ),
-              //     ),
-              //   ),
-              // ),
 
               Flexible(
                 // Expanded(
@@ -145,15 +104,15 @@ class PageList extends ConsumerWidget {
                       String subtext =
                           // productList[index]['barcode'] +
                           // '/' +
-                          productList[index]['makerName'] +
+                          productList[index]['maker'] +
                               '/' +
                               // productList[index]['brandName'] +
                               // '/' +
-                              productList[index]['countryName'] +
+                              productList[index]['country'] +
                               '/' +
-                              productList[index]['quantity'] +
+                              productList[index]['capacity'] +
                               '/' +
-                              productList[index]['storeName'];
+                              productList[index]['store'];
                       // '/' +
                       // productList[index]['comment'];
 
@@ -179,7 +138,7 @@ class PageList extends ConsumerWidget {
                         onDismissed: (direction) async {
                           // ◆削除を実行した際の処理
                           // ◆DBから削除
-                          deleteProduct(productList[index]['barcode']);
+                          deleteProduct(productList[index]['code']);
                           // ◆リストを更新⇒DBから再取得しなくても、画面上は削除される
                           var products = await retrieveProducts();
                           ref.read(Provider_Products_List.notifier).state =
@@ -222,7 +181,7 @@ class PageList extends ConsumerWidget {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Text(
-                                        productList[index]['productName'] ?? '',
+                                        productList[index]['name'] ?? '',
                                         style: const TextStyle(
                                           fontSize: 19,
                                           fontWeight: FontWeight.bold,
@@ -245,7 +204,7 @@ class PageList extends ConsumerWidget {
                                   ),
                                 ),
                                 Text(
-                                  productList[index]['barcode'] ?? '',
+                                  productList[index]['code'] ?? '',
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               ],
@@ -269,23 +228,18 @@ class PageList extends ConsumerWidget {
                                   // ◆Riverpodで値を設定する(オブジェクトで持っちゃってるので詳細画面の作りも変える必要がある)
                                   // ◆詳細画面に遷移します
                                   final Map<String, dynamic> productInfo = {
-                                    'product': {
-                                      'code': productList[index]['barcode'],
-                                      'product_name': productList[index]
-                                          ['productName'],
-                                      'maker': productList[index]['makerName'],
-                                      'brands': productList[index]['brandName'],
-                                      'countries': productList[index]
-                                          ['countryName'],
-                                      'quantity': productList[index]
-                                          ['quantity'],
-                                      'storeName': productList[index]
-                                          ['storeName'],
-                                      'comment': productList[index]['comment'],
-                                      'image_url': productList[index]
-                                          ['imageUrl'],
-                                      'favorit': productList[index]['favorit'],
-                                    },
+                                    // 'product': {
+                                    'code': productList[index]['code'],
+                                    'name': productList[index]['name'],
+                                    'maker': productList[index]['maker'],
+                                    // 'brands': productList[index]['brandName'],
+                                    'country': productList[index]['country'],
+                                    'capacity': productList[index]['capacity'],
+                                    'store': productList[index]['store'],
+                                    'comment': productList[index]['comment'],
+                                    'image_url': productList[index]['imageUrl'],
+                                    'favorit': productList[index]['favorit'],
+                                    // },
                                   };
                                   ref
                                       .read(Provider_Product_Info.notifier)
@@ -305,9 +259,6 @@ class PageList extends ConsumerWidget {
                   },
                 ),
               ),
-
-              // 余白
-              // Expanded(child: Container()),
 
               // 読み取り開始ボタン
               Container(

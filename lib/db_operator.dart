@@ -13,7 +13,7 @@ Future<Database> initDatabase() async {
     version: 1,
     onCreate: (db, version) async {
       await db.execute(
-        "CREATE TABLE IF NOT EXISTS products(barcode TEXT PRIMARY KEY,  productName TEXT, makerName TEXT, countryName TEXT, quantity TEXT, storeName TEXT, comment TEXT, imageUrl TEXT, favorit INTEGER)",
+        "CREATE TABLE IF NOT EXISTS products(code TEXT PRIMARY KEY,  name TEXT, maker TEXT, country TEXT, capacity TEXT, store TEXT, comment TEXT, imageUrl TEXT, favorit INTEGER)",
       );
 
       // トリガーの作成
@@ -48,12 +48,12 @@ Future<bool> insertProduct(Map<String, dynamic> productInfo) async {
   final count = Sqflite.firstIntValue(countResult);
 
   // barcodeが存在するかチェック
-  final existingProduct = await db.query('products',
-      where: 'barcode = ?', whereArgs: [productInfo['barcode']]);
+  final existingProduct = await db
+      .query('products', where: 'code = ?', whereArgs: [productInfo['code']]);
 
   if (existingProduct.isNotEmpty) {
     await db.update('products', productInfo,
-        where: 'barcode = ?', whereArgs: [productInfo['barcode']]);
+        where: 'code = ?', whereArgs: [productInfo['code']]);
   } else if (count! < 100) {
     await db.insert(
       'products',
@@ -78,7 +78,7 @@ Future<Map<String, dynamic>?> retrieveProductByBarcode(String barcode) async {
   final Database db = await initDatabase();
   List<Map<String, dynamic>> products = await db.query(
     'products',
-    where: 'barcode = ?',
+    where: 'code = ?',
     whereArgs: [barcode],
     limit: 1, // 1件のみ取得する
   );
@@ -94,7 +94,7 @@ Future<void> deleteProduct(String barcode) async {
   final Database db = await initDatabase();
   await db.delete(
     'products',
-    where: "barcode = ?",
+    where: "code = ?",
     whereArgs: [barcode],
   );
 }

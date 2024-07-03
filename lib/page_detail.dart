@@ -4,31 +4,41 @@ import 'dart:io';
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/home.dart';
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:barcode_scanner/appbar_component_widget.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+// import 'dart:convert';
+// import 'package:http/http.dart' as http;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:image_picker/image_picker.dart';
 
-Future<Map<String, dynamic>?> fetchProductInfo(String barcode) async {
-  final String apiUrl =
-      'https://world.openfoodfacts.org/api/v3/product/$barcode.json';
+// Future<Map<String, dynamic>?> fetchProductInfo(String barcode) async {
+//   final String apiUrl =
+//       'https://world.openfoodfacts.org/api/v3/product/$barcode.json';
 
-  try {
-    final response = await http.get(Uri.parse(apiUrl));
+//   try {
+//     final response = await http.get(Uri.parse(apiUrl));
 
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      print('APIリクエストの商品情報がありません：リターンコード=${response.statusCode}');
-    }
-  } catch (e) {
-    print('APIリクエストに失敗しました：エラー情報=$e');
-  }
-  return null;
+//     if (response.statusCode == 200) {
+//       return json.decode(response.body);
+//     } else {
+//       print('APIリクエストの商品情報がありません：リターンコード=${response.statusCode}');
+//     }
+//   } catch (e) {
+//     print('APIリクエストに失敗しました：エラー情報=$e');
+//   }
+//   return null;
+// }
+
+// firebaseのデータベースからバーコード値を指定して1件取得する
+Future<Map<String, dynamic>?> fetchFirebaseData(String code) async {
+  Map<String, dynamic>? data;
+  final docRef = FirebaseFirestore.instance.collection('items').doc(code);
+  await docRef.get().then((DocumentSnapshot doc) {
+    data = doc.data() as Map<String, dynamic>;
+  });
+  return data;
 }
 
 // ignore: must_be_immutable
@@ -36,29 +46,29 @@ class PageDetail extends ConsumerWidget {
   PageDetail({super.key});
 
   // AppBar
-  final appBar = AppBarComponentWidget();
+  final appBar = const AppBarComponentWidget();
 
   // 初期化:TextEditingControllerのTextに随時値を設定すると、カーソルが先頭に移ってしまう為、更新したい場合のみ設定するためのフラグを用意し、他画面からもフラグを設定できるようにする
   bool initialized = false;
   String codeValue = '-----';
   // TextEditingControllerのTextに設定する変数
-  String _productName = '';
-  String _makerName = '';
+  String _name = '';
+  String _maker = '';
   // String _brandName = '';
-  String _countryName = '';
+  String _country = '';
   String _imageUrl = '';
-  String _quantity = '';
-  String _storeName = '';
+  String _capacity = '';
+  String _store = '';
   String _comment = '';
   int _favorit = 1;
 
   // TextEditingController:TextFieldに初期値を与えるために使用
-  late TextEditingController _productNameController;
-  late TextEditingController _makerNameController;
+  late TextEditingController _nameController;
+  late TextEditingController _makerController;
   // late TextEditingController _brandNameController;
-  late TextEditingController _countryNameController;
-  late TextEditingController _quantityController;
-  late TextEditingController _storeNameController;
+  late TextEditingController _countryController;
+  late TextEditingController _capacityController;
+  late TextEditingController _storeController;
   late TextEditingController _commentController;
 
   // カメラコントローラ
@@ -89,8 +99,6 @@ class PageDetail extends ConsumerWidget {
     // メッセージ管理
     final l10n = L10n.of(context);
 
-    debugPrint("🔸page_detail->build()");
-
     // カメラコントローラ
     // final imagePicker = ImagePicker();
 
@@ -102,23 +110,23 @@ class PageDetail extends ConsumerWidget {
     if (!initialized) {
       codeValue = scandata != null
           ? scandata.barcodes.first.rawValue
-          : productInfo?['product']['code'] ?? '-----';
+          : productInfo?['code'] ?? '-----';
       //   _brandName = productInfo?['product']?['brands'] ?? '未登録';
       //   // _brandNameController = TextEditingController(text: _brandName);
-      _makerName = productInfo?['product']?['maker'] ?? '';
-      _makerNameController = TextEditingController(text: _makerName);
-      _productName = productInfo?['product']?['product_name'] ?? '';
-      _productNameController = TextEditingController(text: _productName);
-      _countryName = productInfo?['product']?['countries'] ?? '';
-      _countryNameController = TextEditingController(text: _countryName);
-      _imageUrl = productInfo?['product']?['image_url'] ?? '';
-      _quantity = productInfo?['product']?['quantity'] ?? '';
-      _quantityController = TextEditingController(text: _quantity);
-      _storeName = productInfo?['product']?['storeName'] ?? '';
-      _storeNameController = TextEditingController(text: _storeName);
-      _comment = productInfo?['product']?['comment'] ?? '';
+      _maker = productInfo?['maker'] ?? '';
+      _makerController = TextEditingController(text: _maker);
+      _name = productInfo?['name'] ?? '';
+      _nameController = TextEditingController(text: _name);
+      _country = productInfo?['country'] ?? '';
+      _countryController = TextEditingController(text: _country);
+      _imageUrl = productInfo?['image_url'] ?? '';
+      _capacity = productInfo?['capacity'] ?? '';
+      _capacityController = TextEditingController(text: _capacity);
+      _store = productInfo?['store'] ?? '';
+      _storeController = TextEditingController(text: _store);
+      _comment = productInfo?['comment'] ?? '';
       _commentController = TextEditingController(text: _comment);
-      _favorit = productInfo?['product']?['favorit'] ?? 1;
+      _favorit = productInfo?['favorit'] ?? 1;
       initialized = true;
     }
 
@@ -159,9 +167,11 @@ class PageDetail extends ConsumerWidget {
                               horizontal: 16, vertical: 4.0),
                         ),
                         onPressed: () async {
+                          // firebaseから商品情報を取得
+                          fetchFirebaseData(codeValue);
                           // ◆バーコードからOpen Food Facts APIで情報を取得する
-                          final Map<String, dynamic>? productInfo =
-                              await fetchProductInfo(codeValue);
+                          // final Map<String, dynamic>? productInfo =
+                          //     await fetchProductInfo(codeValue);
 
                           if (productInfo != null) {
                             ref.read(Provider_Product_Info.notifier).state =
@@ -179,7 +189,6 @@ class PageDetail extends ConsumerWidget {
                 ),
               ),
               const Divider(
-                // height: 10,
                 thickness: 2,
                 indent: 20,
                 endIndent: 8,
@@ -198,18 +207,15 @@ class PageDetail extends ConsumerWidget {
                         style: const TextStyle(
                           fontSize: 18,
                         ),
-                        controller: _productNameController,
-                        onChanged: (newProductName) {
-                          _productName = newProductName;
-                          // productInfo?['product']?['product_name'] =
-                          //     newProductName;
+                        controller: _nameController,
+                        onChanged: (newName) {
+                          _name = newName;
                         },
                         inputFormatters: [
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
-                          // hintText: l10n.itemDetail_hint_name,
                           isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
@@ -237,17 +243,15 @@ class PageDetail extends ConsumerWidget {
                         style: const TextStyle(
                           fontSize: 18,
                         ),
-                        controller: _makerNameController,
-                        onChanged: (newMakerName) {
-                          _makerName = newMakerName;
-                          // productInfo?['product']?['maker'] = newMakerName;
+                        controller: _makerController,
+                        onChanged: (newMaker) {
+                          _maker = newMaker;
                         },
                         inputFormatters: [
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
-                          // hintText: l10n.itemDetail_hint_maker,
                           isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
@@ -275,18 +279,15 @@ class PageDetail extends ConsumerWidget {
                         style: const TextStyle(
                           fontSize: 18,
                         ),
-                        controller: _countryNameController,
-                        onChanged: (newCountryName) {
-                          _countryName = newCountryName;
-                          //   productInfo?['product']?['countries'] =
-                          //       newCountryName;
+                        controller: _countryController,
+                        onChanged: (newCountry) {
+                          _country = newCountry;
                         },
                         inputFormatters: [
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
-                          // hintText: l10n.itemDetail_hint_country,
                           isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
@@ -314,17 +315,15 @@ class PageDetail extends ConsumerWidget {
                         style: const TextStyle(
                           fontSize: 18,
                         ),
-                        controller: _quantityController,
-                        onChanged: (newQuantity) {
-                          _quantity = newQuantity;
-                          // productInfo?['product']?['quantity'] = newQuantity;
+                        controller: _capacityController,
+                        onChanged: (newCapacity) {
+                          _capacity = newCapacity;
                         },
                         inputFormatters: [
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
-                          // hintText: l10n.itemDetail_hint_capacity,
                           isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
@@ -352,17 +351,15 @@ class PageDetail extends ConsumerWidget {
                         style: const TextStyle(
                           fontSize: 18,
                         ),
-                        controller: _storeNameController,
-                        onChanged: (newStoreName) {
-                          _storeName = newStoreName;
-                          // productInfo?['product']?['storeName'] = newStoreName;
+                        controller: _storeController,
+                        onChanged: (newStore) {
+                          _store = newStore;
                         },
                         inputFormatters: [
                           // 最大15文字まで
                           LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: const InputDecoration(
-                          // hintText: l10n.itemDetail_hint_store,
                           isDense: true,
                           contentPadding:
                               EdgeInsets.only(bottom: 0), // テキスト下部の余白を調整
@@ -391,11 +388,10 @@ class PageDetail extends ConsumerWidget {
                       height: 42,
                       child: IconButton(
                         padding: const EdgeInsets.all(0),
-                        // constraints: const BoxConstraints(), // デフォルトの制約を削除
                         onPressed: () {
                           if (_favorit < 5) {
                             _favorit = _favorit + 1;
-                            productInfo?['product']?['favorit'] = _favorit;
+                            productInfo?['favorit'] = _favorit;
                             ref
                                 .read(Provider_detail_item_update.notifier)
                                 .state = !update;
@@ -419,7 +415,7 @@ class PageDetail extends ConsumerWidget {
                         onPressed: () {
                           if (_favorit > 0) {
                             _favorit = _favorit - 1;
-                            productInfo?['product']?['favorit'] = _favorit;
+                            productInfo?['favorit'] = _favorit;
                             ref
                                 .read(Provider_detail_item_update.notifier)
                                 .state = !update;
@@ -449,10 +445,8 @@ class PageDetail extends ConsumerWidget {
                         ],
                         onChanged: (newComment) {
                           _comment = newComment;
-                          // productInfo?['product']?['comment'] = newComment;
                         },
                         decoration: const InputDecoration(
-                          // hintText: l10n.itemDetail_hint_comment,
                           isDense: true,
                           contentPadding: EdgeInsets.all(4.0), // テキスト下部の余白を調整
                           focusedBorder: UnderlineInputBorder(
@@ -483,8 +477,7 @@ class PageDetail extends ConsumerWidget {
                       padding: const EdgeInsets.only(top: 8, bottom: 8),
                       child: (_cameraController != null &&
                               _cameraController!.value.isInitialized)
-                          // ? const Text('画像プレビュー')
-                          ? Container(
+                          ? SizedBox(
                               width: 136,
                               height: 136,
                               child: AspectRatio(
@@ -511,23 +504,12 @@ class PageDetail extends ConsumerWidget {
                                       fit: BoxFit
                                           .cover, // adjust the fit as needed
                                     ))
-                              // : Image.file(
-                              //     File('assets/images/application_face.png'),
-                              //     width: 136, // adjust the width as needed
-                              //     height: 136, // adjust the height as needed
-                              //     fit: BoxFit.cover, // adjust the fit as needed
-                              //   ),
                               : Image.asset(
                                   'assets/images/barcode_head_face.png',
                                   height: 136,
                                   width: 136,
                                   fit: BoxFit.cover,
                                 ),
-
-                      //           : const Text(
-                      //               'No Image',
-                      //               style: TextStyle(fontSize: 20),
-                      //             ),
                     ),
                   ),
                   Container(
@@ -552,7 +534,7 @@ class PageDetail extends ConsumerWidget {
                                     await _cameraController!.takePicture();
                                 _imageFile = picture;
                               } catch (e) {
-                                print(e);
+                                // print(e);
                               }
                               if (_imageFile != null) {
                                 _imageUrl = _imageFile!.path;
@@ -641,13 +623,13 @@ class PageDetail extends ConsumerWidget {
                             // if (productInfo != null) {
                             // 商品情報をSQLiteデータベースに保存
                             bool result = await insertProduct({
-                              'barcode': codeValue,
-                              'productName': _productName,
-                              'makerName': _makerName,
+                              'code': codeValue,
+                              'name': _name,
+                              'maker': _maker,
                               // 'brandName': _brandName,
-                              'countryName': _countryName,
-                              'quantity': _quantity,
-                              'storeName': _storeName,
+                              'country': _country,
+                              'capacity': _capacity,
+                              'store': _store,
                               'comment': _comment,
                               'imageUrl': _imageUrl,
                               'favorit': _favorit,
