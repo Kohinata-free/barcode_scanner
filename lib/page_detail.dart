@@ -5,6 +5,7 @@ import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/home.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:convert/convert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,13 +32,49 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 //   return null;
 // }
 
+///画面上にローディングアニメーションを表示する
+void dispProgressIndicator(BuildContext context) {
+  // Show the loading indicator
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                backgroundColor: Colors.grey[200],
+                strokeWidth: 6,
+              ),
+              SizedBox(width: 20),
+              Text('Loading...'),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+///画面上にローディングアニメーションを非表示する
+void hideProgressIndicator(BuildContext context) {
+  Navigator.pop(context);
+}
+
 // firebaseのデータベースからバーコード値を指定して1件取得する
-Future<Map<String, dynamic>?> fetchFirebaseData(String code) async {
+Future<Map<String, dynamic>?> fetchFirebaseData(
+    BuildContext context, String code) async {
   Map<String, dynamic>? data;
   final docRef = FirebaseFirestore.instance.collection('items').doc(code);
+
   await docRef.get().then((DocumentSnapshot doc) {
     data = doc.data() as Map<String, dynamic>;
   });
+
   return data;
 }
 
@@ -168,7 +205,7 @@ class PageDetail extends ConsumerWidget {
                         ),
                         onPressed: () async {
                           // firebaseから商品情報を取得
-                          fetchFirebaseData(codeValue);
+                          fetchFirebaseData(context, codeValue);
                           // ◆バーコードからOpen Food Facts APIで情報を取得する
                           // final Map<String, dynamic>? productInfo =
                           //     await fetchProductInfo(codeValue);

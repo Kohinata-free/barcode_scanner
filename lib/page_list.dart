@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:barcode_scanner/home.dart';
+import 'package:barcode_scanner/page_camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'appbar_component_widget.dart';
@@ -61,9 +62,6 @@ class PageList extends ConsumerWidget {
 
     // 商品情報リスト
     final productList = ref.watch(Provider_Products_List);
-
-    // firebaseのデータベース
-    final productList2 = ref.watch(Provider_Products_List2);
 
     // 進捗
     final progress = ref.watch(Provider_progress);

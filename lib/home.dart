@@ -18,10 +18,6 @@ final Provider_Products_List =
     StateProvider<List<Map<String, dynamic>>?>((ref) {
   return null;
 });
-final Provider_Products_List2 =
-    StateProvider<List<Map<String, dynamic>>?>((ref) {
-  return null;
-});
 
 // 進捗インジケーター
 final Provider_progress = StateProvider((ref) {

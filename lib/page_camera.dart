@@ -12,6 +12,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // 音源を再生します
 Future<void> playSound(String source) async {
   AudioPlayer audioPlayer = AudioPlayer();
+  audioPlayer.onPlayerComplete.listen((event) {
+    audioPlayer.dispose();
+  });
   await audioPlayer.play(AssetSource(source));
   // audioPlayer.dispose();
 }
@@ -108,10 +111,11 @@ class PageCamera extends ConsumerWidget {
                       ref.read(Provider_Product_Info.notifier).state =
                           productInfo;
                     } else {
+                      dispProgressIndicator(context);
                       final Map<String, dynamic>? productInfo =
                           await fetchFirebaseData(
-                              scandata.barcodes.first.rawValue!);
-
+                              context, scandata.barcodes.first.rawValue!);
+                      hideProgressIndicator(context);
                       if (productInfo != null) {
                         // 商品情報を更新
                         ref.read(Provider_Product_Info.notifier).state =
