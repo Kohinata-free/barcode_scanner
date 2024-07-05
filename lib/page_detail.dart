@@ -71,9 +71,19 @@ Future<Map<String, dynamic>?> fetchFirebaseData(
   Map<String, dynamic>? data;
   final docRef = FirebaseFirestore.instance.collection('items').doc(code);
 
-  await docRef.get().then((DocumentSnapshot doc) {
-    data = doc.data() as Map<String, dynamic>;
-  });
+  try {
+    await docRef.get().then((DocumentSnapshot doc) {
+      if (doc.exists) {
+        data = doc.data() as Map<String, dynamic>;
+      }
+    });
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('firebase_error'),
+      ),
+    );
+  }
 
   return data;
 }
@@ -163,7 +173,7 @@ class PageDetail extends ConsumerWidget {
       _storeController = TextEditingController(text: _store);
       _comment = productInfo?['comment'] ?? '';
       _commentController = TextEditingController(text: _comment);
-      _favorit = productInfo?['favorit'] ?? 1;
+      _favorit = productInfo?['favorit'] ?? 3;
       initialized = true;
     }
 
@@ -205,14 +215,15 @@ class PageDetail extends ConsumerWidget {
                         ),
                         onPressed: () async {
                           // firebaseから商品情報を取得
-                          fetchFirebaseData(context, codeValue);
+                          final tmpProductInfo =
+                              await fetchFirebaseData(context, codeValue);
                           // ◆バーコードからOpen Food Facts APIで情報を取得する
                           // final Map<String, dynamic>? productInfo =
                           //     await fetchProductInfo(codeValue);
 
-                          if (productInfo != null) {
+                          if (tmpProductInfo != null) {
                             ref.read(Provider_Product_Info.notifier).state =
-                                productInfo;
+                                tmpProductInfo;
                             initialized = false;
                           }
                         },
