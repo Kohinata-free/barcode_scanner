@@ -180,8 +180,10 @@ class PageList extends ConsumerWidget {
                                     children: [
                                       Text(
                                         productList[index]['name'] ?? '',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                          fontSize: 19,
+                                          fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -191,7 +193,7 @@ class PageList extends ConsumerWidget {
                                       ...List.generate(5, (i) {
                                         return Icon(
                                           Icons.favorite,
-                                          size: 22,
+                                          size: 17,
                                           color:
                                               i < productList[index]['favorit']
                                                   ? Colors.pink

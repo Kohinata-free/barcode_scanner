@@ -3,10 +3,13 @@ import 'dart:io';
 
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/home.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:convert/convert.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:barcode_scanner/appbar_component_widget.dart';
@@ -104,6 +107,8 @@ class PageDetail extends ConsumerWidget {
   // String _brandName = '';
   String _country = '';
   String _imageUrl = '';
+  // String _imageUrl_firebase = '';
+  // ImageProvider? _image;
   String _capacity = '';
   String _store = '';
   String _comment = '';
@@ -167,6 +172,9 @@ class PageDetail extends ConsumerWidget {
       _country = productInfo?['country'] ?? '';
       _countryController = TextEditingController(text: _country);
       _imageUrl = productInfo?['image_url'] ?? '';
+      // if (_imageUrl_firebase.isNotEmpty) {
+      //   _image = CachedNetworkImageProvider(_imageUrl_firebase);
+      // }
       _capacity = productInfo?['capacity'] ?? '';
       _capacityController = TextEditingController(text: _capacity);
       _store = productInfo?['store'] ?? '';
@@ -222,8 +230,17 @@ class PageDetail extends ConsumerWidget {
                           //     await fetchProductInfo(codeValue);
 
                           if (tmpProductInfo != null) {
+                            // if (tmpProductInfo['imageUrl'].isNotEmpty &&
+                            //     !tmpProductInfo['imageUrl']
+                            //         .startsWith('http')) {
+                            //   _imageUrl_firebase = await FirebaseStorage
+                            //       .instance
+                            //       .ref(tmpProductInfo['imageUrl'])
+                            //       .getDownloadURL();
+                            // }
                             ref.read(Provider_Product_Info.notifier).state =
                                 tmpProductInfo;
+
                             initialized = false;
                           }
                         },
@@ -544,6 +561,14 @@ class PageDetail extends ConsumerWidget {
                                       fit: BoxFit
                                           .cover, // adjust the fit as needed
                                     )
+                                  // : Container(
+                                  //     width: 136,
+                                  //     height: 136,
+                                  //     decoration: BoxDecoration(
+                                  //       image: DecorationImage(
+                                  //           fit: BoxFit.cover, image: _image!),
+                                  //     ),
+                                  //   ))
                                   : Image.file(
                                       File(_imageUrl),
                                       width: 136, // adjust the width as needed
