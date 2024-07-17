@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/page_detail.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,6 +13,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // 音源を再生します
 Future<void> playSound(String source) async {
   AudioPlayer audioPlayer = AudioPlayer();
+  audioPlayer.onPlayerComplete.listen((event) {
+    audioPlayer.dispose();
+  });
   await audioPlayer.play(AssetSource(source));
   // audioPlayer.dispose();
 }
@@ -93,6 +97,10 @@ class PageCamera extends ConsumerWidget {
                         await retrieveProductByBarcode(
                             scandata.barcodes.first.rawValue!);
                     if (product != null) {
+                      final imageUrlFirebase = await FirebaseStorage.instance
+                          .ref(product['imageUrl'])
+                          .getDownloadURL();
+
                       final Map<String, dynamic> productInfo = {
                         'code': product['code'],
                         'name': product['name'],
@@ -104,15 +112,25 @@ class PageCamera extends ConsumerWidget {
                         'comment': product['comment'],
                         'image_url': product['imageUrl'],
                         'favorit': product['favorit'],
+                        'image_url_firebase': imageUrlFirebase,
                       };
                       ref.read(Provider_Product_Info.notifier).state =
                           productInfo;
                     } else {
+                      dispProgressIndicator(context);
                       final Map<String, dynamic>? productInfo =
                           await fetchFirebaseData(
-                              scandata.barcodes.first.rawValue!);
-
+                              context, scandata.barcodes.first.rawValue!);
+                      hideProgressIndicator(context);
                       if (productInfo != null) {
+                        if (productInfo['image_url'] != null &&
+                            productInfo['image_url'] != '') {
+                          final imageUrlFirebase = await FirebaseStorage
+                              .instance
+                              .ref(productInfo['image_url'])
+                              .getDownloadURL();
+                          productInfo['image_url_firebase'] = imageUrlFirebase;
+                        }
                         // 商品情報を更新
                         ref.read(Provider_Product_Info.notifier).state =
                             productInfo;

@@ -3,9 +3,13 @@ import 'dart:io';
 
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/home.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:convert/convert.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:barcode_scanner/appbar_component_widget.dart';
@@ -31,13 +35,59 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 //   return null;
 // }
 
+///画面上にローディングアニメーションを表示する
+void dispProgressIndicator(BuildContext context) {
+  // Show the loading indicator
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                backgroundColor: Colors.grey[200],
+                strokeWidth: 6,
+              ),
+              SizedBox(width: 20),
+              Text('Loading...'),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+///画面上にローディングアニメーションを非表示する
+void hideProgressIndicator(BuildContext context) {
+  Navigator.pop(context);
+}
+
 // firebaseのデータベースからバーコード値を指定して1件取得する
-Future<Map<String, dynamic>?> fetchFirebaseData(String code) async {
+Future<Map<String, dynamic>?> fetchFirebaseData(
+    BuildContext context, String code) async {
   Map<String, dynamic>? data;
   final docRef = FirebaseFirestore.instance.collection('items').doc(code);
-  await docRef.get().then((DocumentSnapshot doc) {
-    data = doc.data() as Map<String, dynamic>;
-  });
+
+  try {
+    await docRef.get().then((DocumentSnapshot doc) {
+      if (doc.exists) {
+        data = doc.data() as Map<String, dynamic>;
+      }
+    });
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('firebase_error'),
+      ),
+    );
+  }
+
   return data;
 }
 
@@ -57,6 +107,8 @@ class PageDetail extends ConsumerWidget {
   // String _brandName = '';
   String _country = '';
   String _imageUrl = '';
+  String _imageUrlFirebase = '';
+  ImageProvider? _image;
   String _capacity = '';
   String _store = '';
   String _comment = '';
@@ -120,13 +172,17 @@ class PageDetail extends ConsumerWidget {
       _country = productInfo?['country'] ?? '';
       _countryController = TextEditingController(text: _country);
       _imageUrl = productInfo?['image_url'] ?? '';
+      _imageUrlFirebase = productInfo?['image_url_firebase'] ?? '';
+      if (_imageUrlFirebase.isNotEmpty) {
+        _image = CachedNetworkImageProvider(_imageUrlFirebase);
+      }
       _capacity = productInfo?['capacity'] ?? '';
       _capacityController = TextEditingController(text: _capacity);
       _store = productInfo?['store'] ?? '';
       _storeController = TextEditingController(text: _store);
       _comment = productInfo?['comment'] ?? '';
       _commentController = TextEditingController(text: _comment);
-      _favorit = productInfo?['favorit'] ?? 1;
+      _favorit = productInfo?['favorit'] ?? 3;
       initialized = true;
     }
 
@@ -168,14 +224,23 @@ class PageDetail extends ConsumerWidget {
                         ),
                         onPressed: () async {
                           // firebaseから商品情報を取得
-                          fetchFirebaseData(codeValue);
+                          final tmpProductInfo =
+                              await fetchFirebaseData(context, codeValue);
                           // ◆バーコードからOpen Food Facts APIで情報を取得する
                           // final Map<String, dynamic>? productInfo =
                           //     await fetchProductInfo(codeValue);
 
-                          if (productInfo != null) {
+                          if (tmpProductInfo != null) {
+                            if (tmpProductInfo['imageUrl'].isNotEmpty &&
+                                !tmpProductInfo['imageUrl']
+                                    .startsWith('http')) {
+                              _imageUrlFirebase = await FirebaseStorage.instance
+                                  .ref(tmpProductInfo['imageUrl'])
+                                  .getDownloadURL();
+                            }
                             ref.read(Provider_Product_Info.notifier).state =
-                                productInfo;
+                                tmpProductInfo;
+
                             initialized = false;
                           }
                         },
@@ -496,14 +561,28 @@ class PageDetail extends ConsumerWidget {
                                       fit: BoxFit
                                           .cover, // adjust the fit as needed
                                     )
-                                  : Image.file(
-                                      File(_imageUrl),
-                                      width: 136, // adjust the width as needed
-                                      height:
-                                          136, // adjust the height as needed
-                                      fit: BoxFit
-                                          .cover, // adjust the fit as needed
+                                  : Container(
+                                      width: 136,
+                                      height: 136,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            fit: BoxFit.cover, image: _image!),
+                                      ),
                                     ))
+                              // : Image.file(
+                              //     File(_imageUrl),
+                              //     width: 136, // adjust the width as needed
+                              //     height:
+                              //         136, // adjust the height as needed
+                              //     fit: BoxFit
+                              //         .cover, // adjust the fit as needed
+                              //   ))
+                              // : Image.asset(
+                              //     'assets/images/barcode_head_face.png',
+                              //     height: 136,
+                              //     width: 136,
+                              //     fit: BoxFit.cover,
+                              //   ))
                               : Image.asset(
                                   'assets/images/barcode_head_face.png',
                                   height: 136,
