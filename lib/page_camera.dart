@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:barcode_scanner/db_operator.dart';
 import 'package:barcode_scanner/page_detail.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -96,6 +97,10 @@ class PageCamera extends ConsumerWidget {
                         await retrieveProductByBarcode(
                             scandata.barcodes.first.rawValue!);
                     if (product != null) {
+                      final imageUrlFirebase = await FirebaseStorage.instance
+                          .ref(product['imageUrl'])
+                          .getDownloadURL();
+
                       final Map<String, dynamic> productInfo = {
                         'code': product['code'],
                         'name': product['name'],
@@ -107,6 +112,7 @@ class PageCamera extends ConsumerWidget {
                         'comment': product['comment'],
                         'image_url': product['imageUrl'],
                         'favorit': product['favorit'],
+                        'image_url_firebase': imageUrlFirebase,
                       };
                       ref.read(Provider_Product_Info.notifier).state =
                           productInfo;
@@ -117,6 +123,10 @@ class PageCamera extends ConsumerWidget {
                               context, scandata.barcodes.first.rawValue!);
                       hideProgressIndicator(context);
                       if (productInfo != null) {
+                        final imageUrlFirebase = await FirebaseStorage.instance
+                            .ref(productInfo['imageUrl'])
+                            .getDownloadURL();
+                        productInfo['image_url_firebase'] = imageUrlFirebase;
                         // 商品情報を更新
                         ref.read(Provider_Product_Info.notifier).state =
                             productInfo;
