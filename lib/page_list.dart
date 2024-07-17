@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:barcode_scanner/home.dart';
 import 'package:barcode_scanner/page_camera.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'appbar_component_widget.dart';
@@ -224,9 +225,18 @@ class PageList extends ConsumerWidget {
                               child: IconButton(
                                 color: Colors.blue[900],
                                 icon: const Icon(Icons.arrow_forward_ios),
-                                onPressed: () {
+                                onPressed: () async {
                                   // ◆Riverpodで値を設定する(オブジェクトで持っちゃってるので詳細画面の作りも変える必要がある)
                                   // ◆詳細画面に遷移します
+                                  String imageUrlFirebase = '';
+                                  if (productList[index]['imageUrl'] != null &&
+                                      productList[index]['imageUrl'] != '') {
+                                    imageUrlFirebase = await FirebaseStorage
+                                        .instance
+                                        .ref(productList[index]['imageUrl'])
+                                        .getDownloadURL();
+                                  }
+
                                   final Map<String, dynamic> productInfo = {
                                     // 'product': {
                                     'code': productList[index]['code'],
@@ -238,6 +248,7 @@ class PageList extends ConsumerWidget {
                                     'store': productList[index]['store'],
                                     'comment': productList[index]['comment'],
                                     'image_url': productList[index]['imageUrl'],
+                                    'image_url_firebase': imageUrlFirebase,
                                     'favorit': productList[index]['favorit'],
                                     // },
                                   };

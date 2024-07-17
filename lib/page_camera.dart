@@ -123,10 +123,14 @@ class PageCamera extends ConsumerWidget {
                               context, scandata.barcodes.first.rawValue!);
                       hideProgressIndicator(context);
                       if (productInfo != null) {
-                        final imageUrlFirebase = await FirebaseStorage.instance
-                            .ref(productInfo['imageUrl'])
-                            .getDownloadURL();
-                        productInfo['image_url_firebase'] = imageUrlFirebase;
+                        if (productInfo['image_url'] != null &&
+                            productInfo['image_url'] != '') {
+                          final imageUrlFirebase = await FirebaseStorage
+                              .instance
+                              .ref(productInfo['image_url'])
+                              .getDownloadURL();
+                          productInfo['image_url_firebase'] = imageUrlFirebase;
+                        }
                         // 商品情報を更新
                         ref.read(Provider_Product_Info.notifier).state =
                             productInfo;
