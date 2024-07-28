@@ -74,238 +74,248 @@ class PageList extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.pink[50],
       appBar: appBar,
-      body: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              // タイトル
-              Container(
-                padding: const EdgeInsets.all(4),
-                alignment: Alignment.center,
-                child: Text(
-                  l10n.itemList_title,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, color: Colors.blue[800]),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                // タイトル
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  alignment: Alignment.center,
+                  child: Text(
+                    l10n.itemList_title,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 24, color: Colors.blue[800]),
+                  ),
                 ),
-              ),
 
-              // ■並び替えラジオボタン
-              // const Text('並び替えボタンを置くよ'),
+                // ■並び替えラジオボタン
+                // const Text('並び替えボタンを置くよ'),
 
-              Flexible(
-                // Expanded(
-                child: ListView.builder(
-                  itemCount: productList?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    if (productList != null && index < productList.length) {
-                      String subtext =
-                          // productList[index]['barcode'] +
-                          // '/' +
-                          productList[index]['maker'] +
-                              '/' +
-                              // productList[index]['brandName'] +
-                              // '/' +
-                              productList[index]['country'] +
-                              '/' +
-                              productList[index]['capacity'] +
-                              '/' +
-                              productList[index]['store'];
-                      // '/' +
-                      // productList[index]['comment'];
+                Flexible(
+                  // Expanded(
+                  child: ListView.builder(
+                    itemCount: productList?.length ?? 0,
+                    itemBuilder: (context, index) {
+                      if (productList != null && index < productList.length) {
+                        String subtext =
+                            // productList[index]['barcode'] +
+                            // '/' +
+                            productList[index]['maker'] +
+                                '/' +
+                                // productList[index]['brandName'] +
+                                // '/' +
+                                productList[index]['country'] +
+                                '/' +
+                                productList[index]['capacity'] +
+                                '/' +
+                                productList[index]['store'] +
+                                '/' +
+                                productList[index]['comment'];
+                        // '/' +
+                        // productList[index]['comment'];
 
-                      return Dismissible(
-                        key: UniqueKey(),
-                        background: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerLeft,
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 20.0),
-                                child: Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (direction) async {
-                          // ◆削除を実行した際の処理
-                          // ◆DBから削除
-                          deleteProduct(productList[index]['code']);
-                          // ◆リストを更新⇒DBから再取得しなくても、画面上は削除される
-                          var products = await retrieveProducts();
-                          ref.read(Provider_Products_List.notifier).state =
-                              products;
-                        },
-                        confirmDismiss: (direction) async {
-                          return await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text(l10n.itemList_delete_title),
-                                content: Text(l10n.itemList_delete_message),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(true),
-                                    child: Text(l10n.itemList_delete_btnYes),
-                                  ),
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    child: Text(l10n.itemList_delete_btnNo),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        child: Card(
-                          color: Colors.blue[100],
-                          child: ListTile(
-                            contentPadding:
-                                const EdgeInsets.only(left: 8.0, right: 0.0),
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        return Dismissible(
+                          key: UniqueKey(),
+                          background: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerLeft,
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.all(0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        productList[index]['name'] ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Container(),
-                                      ),
-                                      ...List.generate(5, (i) {
-                                        return Icon(
-                                          Icons.favorite,
-                                          size: 17,
-                                          color:
-                                              i < productList[index]['favorit']
-                                                  ? Colors.pink
-                                                  : Colors.grey,
-                                        );
-                                      }),
-                                    ],
+                                  padding: EdgeInsets.only(right: 20.0),
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
                                   ),
-                                ),
-                                Text(
-                                  productList[index]['code'] ?? '',
-                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ],
                             ),
-                            subtitle: Text(
-                              subtext,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[700],
+                          ),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (direction) async {
+                            // ◆削除を実行した際の処理
+                            // ◆DBから削除
+                            deleteProduct(productList[index]['code']);
+                            // ◆リストを更新⇒DBから再取得しなくても、画面上は削除される
+                            var products = await retrieveProducts();
+                            ref.read(Provider_Products_List.notifier).state =
+                                products;
+                          },
+                          confirmDismiss: (direction) async {
+                            return await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text(l10n.itemList_delete_title),
+                                  content: Text(l10n.itemList_delete_message),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: Text(l10n.itemList_delete_btnYes),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: Text(l10n.itemList_delete_btnNo),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Card(
+                            color: Colors.blue[100],
+                            child: ListTile(
+                              contentPadding:
+                                  const EdgeInsets.only(left: 8.0, right: 0.0),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            productList[index]['name'] ?? '',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        ...List.generate(5, (i) {
+                                          return Icon(
+                                            Icons.favorite,
+                                            size: 17,
+                                            color: i <
+                                                    productList[index]
+                                                        ['favorit']
+                                                ? Colors.pink
+                                                : Colors.grey,
+                                          );
+                                        }),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    productList[index]['code'] ?? '',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ],
                               ),
-                              // overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: Container(
-                              padding: EdgeInsets.all(0),
-                              width: 40,
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                color: Colors.blue[900],
-                                icon: const Icon(Icons.arrow_forward_ios),
-                                onPressed: () async {
-                                  // ◆Riverpodで値を設定する(オブジェクトで持っちゃってるので詳細画面の作りも変える必要がある)
-                                  // ◆詳細画面に遷移します
-                                  String imageUrlFirebase = '';
-                                  if (productList[index]['imageUrl'] != null &&
-                                      productList[index]['imageUrl'] != '') {
-                                    imageUrlFirebase = await FirebaseStorage
-                                        .instance
-                                        .ref(productList[index]['imageUrl'])
-                                        .getDownloadURL();
-                                  }
+                              subtitle: Text(
+                                subtext,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[700],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              trailing: Container(
+                                padding: EdgeInsets.all(0),
+                                width: 40,
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  color: Colors.blue[900],
+                                  icon: const Icon(Icons.arrow_forward_ios),
+                                  onPressed: () async {
+                                    // ◆Riverpodで値を設定する(オブジェクトで持っちゃってるので詳細画面の作りも変える必要がある)
+                                    // ◆詳細画面に遷移します
+                                    String imageUrlFirebase = '';
+                                    if (productList[index]['imageUrl'] !=
+                                            null &&
+                                        productList[index]['imageUrl'] != '') {
+                                      imageUrlFirebase = await FirebaseStorage
+                                          .instance
+                                          .ref(productList[index]['imageUrl'])
+                                          .getDownloadURL();
+                                    }
 
-                                  final Map<String, dynamic> productInfo = {
-                                    // 'product': {
-                                    'code': productList[index]['code'],
-                                    'name': productList[index]['name'],
-                                    'maker': productList[index]['maker'],
-                                    // 'brands': productList[index]['brandName'],
-                                    'country': productList[index]['country'],
-                                    'capacity': productList[index]['capacity'],
-                                    'store': productList[index]['store'],
-                                    'comment': productList[index]['comment'],
-                                    'image_url': productList[index]['imageUrl'],
-                                    'image_url_firebase': imageUrlFirebase,
-                                    'favorit': productList[index]['favorit'],
-                                    // },
-                                  };
-                                  ref
-                                      .read(Provider_Product_Info.notifier)
-                                      .state = productInfo;
+                                    final Map<String, dynamic> productInfo = {
+                                      // 'product': {
+                                      'code': productList[index]['code'],
+                                      'name': productList[index]['name'],
+                                      'maker': productList[index]['maker'],
+                                      // 'brands': productList[index]['brandName'],
+                                      'country': productList[index]['country'],
+                                      'capacity': productList[index]
+                                          ['capacity'],
+                                      'store': productList[index]['store'],
+                                      'comment': productList[index]['comment'],
+                                      'image_url': productList[index]
+                                          ['imageUrl'],
+                                      'image_url_firebase': imageUrlFirebase,
+                                      'favorit': productList[index]['favorit'],
+                                      // },
+                                    };
+                                    ref
+                                        .read(Provider_Product_Info.notifier)
+                                        .state = productInfo;
 
-                                  pageDetail.initialized = false;
-                                  Navigator.pushNamed(context, '/page_detail');
-                                },
+                                    pageDetail.initialized = false;
+                                    Navigator.pushNamed(
+                                        context, '/page_detail');
+                                  },
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    } else {
-                      return const Text('No Items');
-                    }
-                  },
-                ),
-              ),
-
-              // 読み取り開始ボタン
-              Container(
-                margin: const EdgeInsets.all(8),
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all<Color>(
-                      const Color.fromARGB(255, 244, 143, 177),
-                    ),
-                    minimumSize: WidgetStateProperty.all(
-                        const Size(double.infinity, 55.0)),
-                  ),
-                  onPressed: () {
-                    pageDetail.initialized = false;
-
-                    Navigator.pushNamed(context, '/page_camera');
-                  },
-                  child: Text(
-                    l10n.itemList_btnReadBarCode,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                    ),
+                        );
+                      } else {
+                        return const Text('No Items');
+                      }
+                    },
                   ),
                 ),
-              ),
-            ],
-          ),
-          if (progress)
-            Container(
-              color: Colors.black54,
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+
+                // 読み取り開始ボタン
+                Container(
+                  margin: const EdgeInsets.all(8),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all<Color>(
+                        const Color.fromARGB(255, 244, 143, 177),
+                      ),
+                      minimumSize: WidgetStateProperty.all(
+                          const Size(double.infinity, 55.0)),
+                    ),
+                    onPressed: () {
+                      pageDetail.initialized = false;
+
+                      Navigator.pushNamed(context, '/page_camera');
+                    },
+                    child: Text(
+                      l10n.itemList_btnReadBarCode,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-        ],
+            if (progress)
+              Container(
+                color: Colors.black54,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
